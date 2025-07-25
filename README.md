@@ -29,7 +29,7 @@
 
 1.  Клонируйте репозиторий:
     ```sh
-    git clone https://github.com/RomashkaFM/spend-time-together-frontend.git
+    git clone https://github.com/Murzin-backend/spend-time-together-frontend.git
     ```
 2.  Перейдите в директорию проекта:
     ```sh
