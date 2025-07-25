@@ -1,0 +1,118 @@
+.registration-page-container {
+    background-color: rgba(30, 33, 40, 0.9);
+    padding: 2.5rem;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 480px;
+    text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.registration-page-container form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+/* Заголовок формы */
+.registration-page-container h2 {
+    margin: 0;
+    color: #ffffff;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* Подзаголовок */
+.subtitle {
+    text-align: center;
+    color: #a0a0a0;
+    margin-top: -1rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+}
+
+.name-fields-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.name-fields-group .form-group {
+    flex: 1;
+}
+
+/* Кнопка */
+.register-button {
+    padding: 0.9rem;
+    border: none;
+    border-radius: 4px;
+    background-image: linear-gradient(to right, #2a9df4, #1a8de4);
+    color: white;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 12px rgba(42, 157, 244, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 45px;
+}
+
+.register-button:disabled {
+    background-image: linear-gradient(to right, #5c7a94, #4c6a84);
+    cursor: not-allowed;
+    transform: none;
+    filter: brightness(0.8);
+}
+
+.register-button:hover {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
+}
+
+.register-button:active {
+    transform: translateY(0);
+    filter: brightness(1);
+}
+
+/* Спиннер для кнопки */
+.spinner {
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top: 3px solid #fff;
+    width: 22px;
+    height: 22px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+
+/* Ссылка для входа */
+.signin-link {
+  margin-top: 1rem;
+  text-align: center;
+  color: #a0a0a0;
+  font-size: 0.9em;
+}
+
+.signin-link a {
+  color: #2a9df4;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.signin-link a:hover {
+  text-decoration: underline;
+}

@@ -1,12 +1,35 @@
 .App {
+  position: relative;
   text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  color: #e0e0e0;
+  background-color: #0d1117;
+  background-image: radial-gradient(ellipse at top, #1f2937, #0d1117), radial-gradient(ellipse at bottom, #172554, #0d1117);
+  background-attachment: fixed;
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
 }
+.App-logo img {
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
+@media (prefers-reduced-motion: reduce) {
+  .App-logo {
+    animation: none;
+  }
+}
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
@@ -14,18 +37,45 @@
 }
 
 .App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.App-header h1 {
+  font-size: 2.5rem;
+  color: #333333;
+}
+
+.App-header p {
+  font-size: 1.2rem;
+  color: #616161;
+  margin-bottom: 20px;
 }
 
 .App-link {
   color: #61dafb;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 20px;
+  margin-top: 30px;
+}
+
+.auth-btn {
+  padding: 12px 32px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: #61dafb;
+  color: #282c34;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.auth-btn:hover {
+  background-color: #21a1f3;
+  color: #fff;
 }
 
 @keyframes App-logo-spin {
