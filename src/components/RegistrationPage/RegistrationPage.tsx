@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Notification from '../Notification/Notification.tsx';
+import api from "../../api/axiosConfig.ts";
 
 const RegistrationPage = () => {
     const [formData, setFormData] = useState({
@@ -29,10 +30,10 @@ const RegistrationPage = () => {
         setIsLoading(true);
         try {
             const { confirmPassword, ...dataToSend } = formData;
-            await axios.post('http://0.0.0.0:8000/api/auth/registration', dataToSend, {
-                withCredentials: true
-            });
-            navigate('/login', { state: { message: 'Регистрация прошла успешно! Теперь вы можете войти.' } });
+            await api.post('/auth/registration', dataToSend);
+            // Сразу авторизуем и перенаправляем на главную страницу
+            await api.post('/auth/login', { login: dataToSend.login, password: dataToSend.password });
+            navigate('/home', { state: { message: 'Регистрация прошла успешно! Добро пожаловать!', isNewUser: true } });
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 409) {
                 setNotification({ message: 'Пользователь с таким логином или email уже существует.', type: 'error' });
@@ -46,7 +47,7 @@ const RegistrationPage = () => {
     };
 
     return (
-        <>
+        <div className="auth-container">
             <Notification
                 message={notification.message}
                 type={notification.type}
@@ -90,7 +91,7 @@ const RegistrationPage = () => {
                     Уже есть аккаунт? <Link to="/login">Войти</Link>
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

@@ -1,0 +1,103 @@
+.right-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    background-color: #161b22;
+    padding: 1.5rem;
+    border-left: 1px solid #30363d;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-sizing: border-box;
+    color: #c9d1d9;
+}
+
+.right-sidebar h4 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+    margin: 0 0 1.5rem 0;
+}
+
+.room-details {
+    margin-bottom: 2rem;
+}
+
+.room-details strong {
+    font-size: 1.1rem;
+    color: #fff;
+}
+
+.room-details p {
+    color: #8b949e;
+    font-size: 0.9rem;
+    word-wrap: break-word;
+}
+
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.action-buttons button {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 6px;
+    border: 1px solid #30363d;
+    background-color: #21262d;
+    color: #c9d1d9;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-buttons button:hover {
+    background-color: #30363d;
+    border-color: #8b949e;
+}
+
+.action-buttons button.placeholder {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.action-buttons button.danger {
+    border-color: rgba(248, 81, 73, 0.4);
+    color: #f85149;
+}
+
+.action-buttons button.danger:hover {
+    background-color: rgba(248, 81, 73, 0.1);
+    border-color: #f85149;
+    color: #fff;
+}
+
+.no-room-selected {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    text-align: center;
+    color: #8b949e;
+}
+
+.logout-section {
+    margin-top: auto; /* Pushes the logout button to the bottom */
+}
+
+.logout-section .logout {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 6px;
+    border: 1px solid rgba(248, 81, 73, 0.4);
+    background-color: transparent;
+    color: #f85149;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.logout-section .logout:hover {
+    background-color: #f85149;
+    color: #fff;
+}
+

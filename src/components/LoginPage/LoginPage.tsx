@@ -1,8 +1,9 @@
 import React, {useState, useEffect} from 'react';
 import {Link, useNavigate, useLocation} from 'react-router-dom';
 import './LoginPage.css';
-import axios from "axios";
+import api from "../../api/axiosConfig.ts";
 import Notification from "../Notification/Notification.tsx";
+import axios from "axios";
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
@@ -29,10 +30,9 @@ const LoginPage = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            await axios.post('http://0.0.0.0:8000/api/auth/login', formData, {
-                withCredentials: true
-            });
-            navigate('/home', { state: { message: 'Вы успешно вошли!' } });
+            await api.post('/auth/login', formData);
+            // Немедленный переход на домашнюю страницу с сообщением об успехе
+            navigate('/home', { state: { message: 'Вы успешно вошли!', isNewUser: false } });
         } catch (error) {
             if (axios.isAxiosError(error) && (error.response?.status === 401 || error.response?.status === 404)) {
                 setNotification({ message: 'Неправильный логин или пароль.', type: 'error' });
@@ -46,7 +46,7 @@ const LoginPage = () => {
     };
 
   return (
-      <>
+      <div className="auth-container">
           <Notification
               message={notification.message}
               type={notification.type}
@@ -71,7 +71,7 @@ const LoginPage = () => {
                   Нет аккаунта? <Link to="/register">Зарегистрироваться</Link>
               </div>
           </div>
-      </>
+      </div>
   );
 };
 

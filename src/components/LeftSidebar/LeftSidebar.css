@@ -1,0 +1,127 @@
+.left-sidebar {
+    width: 280px;
+    flex-shrink: 0;
+    background-color: #161b22;
+    border-right: 1px solid #30363d;
+    transition: transform 0.3s ease-in-out, margin-left 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    box-sizing: border-box;
+    transform: translateX(0);
+}
+
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 1.5rem;
+    box-sizing: border-box;
+}
+
+.left-sidebar.collapsed {
+    margin-left: -280px;
+}
+
+.left-sidebar h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem;
+    margin: 0 0 1.5rem 0;
+    color: #c9d1d9;
+}
+
+.rooms-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    overflow-y: auto;
+    flex-grow: 1;
+}
+
+.room-item-container {
+    padding: 0.8rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    color: #8b949e;
+    font-weight: 500;
+}
+
+.room-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.room-item-container:hover {
+    background-color: #21262d;
+    color: #c9d1d9;
+}
+
+.room-item-container.active {
+    background-color: #0d47a1;
+    color: #ffffff;
+}
+
+.sidebar-actions {
+    margin-top: auto;
+    padding-top: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    border-top: 1px solid #3a3f4c;
+}
+
+.sidebar-action-btn {
+    flex: 1;
+    padding: 0.7rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 1px solid transparent;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.sidebar-action-btn.create {
+    background-color: #2a9df4;
+    color: white;
+}
+
+.sidebar-action-btn.create:hover {
+    background-color: #1a8ae1;
+}
+
+.sidebar-action-btn.join {
+    background-color: #373b43;
+    color: #e0e0e0;
+    border-color: #4d5158;
+}
+
+.sidebar-action-btn.join:hover {
+    background-color: #4d5158;
+}
+
+.sidebar-toggle-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1100;
+    background-color: rgba(30, 33, 40, 0.8);
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.sidebar-toggle-btn.open {
+    left: 300px; /* 280px sidebar width + 20px padding */
+}
