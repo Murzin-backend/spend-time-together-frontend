@@ -1,62 +1,85 @@
 import React from 'react';
 import './LeftSidebar.css';
 
-interface RoomItemProps {
-    room: any;
-    isSelected: boolean;
-    onSelect: (room: any) => void;
+interface User {
+    id: number;
+    login: string;
+    first_name: string;
+    last_name: string;
 }
 
-const RoomItem: React.FC<RoomItemProps> = ({ room, isSelected, onSelect }) => {
-    // В будущем здесь можно будет добавить state для отслеживания, развернут ли список участников
-    return (
-        <div
-            className={`room-item-container ${isSelected ? 'active' : ''}`}
-            onClick={() => onSelect(room)}
-        >
-            <div className="room-name">{room.name}</div>
-            {/* Здесь в будущем будет рендериться список участников, если комната выбрана и развернута */}
-        </div>
-    );
-};
-
+interface Room {
+    id: number;
+    name: string;
+}
 
 interface LeftSidebarProps {
-    rooms: any[];
-    selectedRoom: any | null;
-    onSelectRoom: (room: any) => void;
+    rooms: Room[];
+    selectedRoom: Room | null;
+    onSelectRoom: (room: Room) => void;
     isCollapsed: boolean;
-    onToggle: () => void;
-    onJoinNewRoom: () => void;
-    onCreateNewRoom: () => void;
+    roomUsers: User[];
+    isUsersLoading: boolean;
+    handleOpenCreateModal: () => void;
+    handleOpenJoinModal: () => void;
 }
 
-const LeftSidebar: React.FC<LeftSidebarProps> = ({ rooms, selectedRoom, onSelectRoom, isCollapsed, onToggle, onJoinNewRoom, onCreateNewRoom }) => {
+const LeftSidebar: React.FC<LeftSidebarProps> = ({
+    rooms,
+    selectedRoom,
+    onSelectRoom,
+    isCollapsed,
+    roomUsers,
+    isUsersLoading,
+    handleOpenCreateModal,
+    handleOpenJoinModal,
+}) => {
     return (
-        <>
-            <button onClick={onToggle} className={`sidebar-toggle-btn ${!isCollapsed ? 'open' : ''}`}>
-                {isCollapsed ? '☰' : '✕'}
-            </button>
-            <div className={`left-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
-                <div className="sidebar-content">
-                    <h3>Ваши комнаты</h3>
-                    <div className="rooms-list">
-                        {rooms.map(room => (
-                            <RoomItem
-                                key={room.id}
-                                room={room}
-                                isSelected={selectedRoom?.id === room.id}
-                                onSelect={onSelectRoom}
-                            />
-                        ))}
-                    </div>
-                    <div className="sidebar-actions">
-                        <button onClick={onCreateNewRoom} className="sidebar-action-btn create">Создать</button>
-                        <button onClick={onJoinNewRoom} className="sidebar-action-btn join">+ Присоединиться</button>
-                    </div>
+        <aside className={`left-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+            <div className="sidebar-header">
+                <h3>Комнаты</h3>
+            </div>
+            <div className="sidebar-content">
+                <div className="rooms-list-sidebar">
+                    {(rooms || []).map(room => {
+                        const isSelected = selectedRoom?.id === room.id;
+                        return (
+                            <div key={room.id} className={`room-item ${isSelected ? 'selected' : ''}`}>
+                                <div className="room-name" onClick={() => onSelectRoom(room)}>
+                                    <span className="room-name-text">{room.name}</span>
+                                    <span className={`arrow ${isSelected ? 'expanded' : ''}`}>▼</span>
+                                </div>
+                                <div className={`users-list-container ${isSelected ? 'expanded' : ''}`}>
+                                    {isSelected && isUsersLoading ? (
+                                        <div className="user-list-spinner-container">
+                                            <div className="spinner small"></div>
+                                        </div>
+                                    ) : (
+                                        <ul className="users-list">
+                                            {isSelected && (roomUsers || []).length > 0 ? (
+                                                (roomUsers || []).map(user => (
+                                                    <li key={user.id} className="user-item">
+                                                        <div className="user-avatar"></div>
+                                                        <span className="user-name">{user.first_name} {user.last_name}</span>
+                                                    </li>
+                                                ))
+                                            ) : isSelected ? (
+                                                <li className="user-item-empty">В комнате пусто</li>
+                                            ) : null}
+                                        </ul>
+                                    )}
+                                </div>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
-        </>
+
+            <div className="sidebar-footer">
+                <button className="sidebar-action-btn create" onClick={handleOpenCreateModal}>Создать</button>
+                <button className="sidebar-action-btn join" onClick={handleOpenJoinModal}>Войти</button>
+            </div>
+        </aside>
     );
 };
 
