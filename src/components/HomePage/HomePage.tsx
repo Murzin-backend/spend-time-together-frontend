@@ -7,7 +7,7 @@ import RightSidebar from '../RightSidebar/RightSidebar.tsx';
 import Modal from '../Modal/Modal.tsx';
 import {Calendar, dateFnsLocalizer} from 'react-big-calendar';
 import { addMonths, format, parse, subMonths, startOfWeek, getDay } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import { ru } from 'date-fns/locale/ru';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import './HomePage.css';
 import './Calendar.css';
