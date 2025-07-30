@@ -4,7 +4,7 @@ import './LoginPage.css';
 import api from "../../api/axiosConfig.ts";
 import Notification from "../Notification/Notification.tsx";
 import axios from "axios";
-import logo from '../../assets/logo.png'; // 1. Импортируйте логотип
+import logo from '../../assets/logo.png';
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({

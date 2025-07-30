@@ -1,6 +1,6 @@
 import React from 'react';
 import './LeftSidebar.css';
-import icon from '../../assets/icon.png';
+import icon from '../../../assets/icon.png';
 
 interface User {
     id: number;
