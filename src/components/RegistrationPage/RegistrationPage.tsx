@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Notification from '../Notification/Notification.tsx';
 import api from "../../api/axiosConfig.ts";
+import './RegistrationPage.css';
 
 const RegistrationPage = () => {
     const [formData, setFormData] = useState({
@@ -54,9 +55,12 @@ const RegistrationPage = () => {
                 onClose={() => setNotification({ message: '', type: 'success' })}
             />
             <div className="registration-page-container">
-                <form onSubmit={handleSubmit}>
+                <div className="auth-header">
+                    <img src="/assets/logo.png" alt="Логотип" className="auth-logo" />
                     <h2>Создание аккаунта</h2>
-                    <p className="subtitle">Присоединяйтесь к нам, чтобы начать!</p>
+                </div>
+                <p className="subtitle">Присоединяйтесь к нам, чтобы начать!</p>
+                <form onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label htmlFor="login">Логин</label>
                         <input id="login" type="text" placeholder="Придумайте логин" value={formData.login} onChange={handleChange} required />

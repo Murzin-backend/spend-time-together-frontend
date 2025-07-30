@@ -53,8 +53,11 @@ const LoginPage = () => {
               onClose={() => setNotification({ message: '', type: 'success' })}
           />
           <div className="login-page-container">
-              <form onSubmit={handleSubmit}>
+              <div className="auth-header">
+                  <img src="/assets/logo.png" alt="Логотип" className="auth-logo" />
                   <h2>Spend Time Together</h2>
+              </div>
+              <form onSubmit={handleSubmit}>
                   <div className="form-group">
                       <label htmlFor="login">Логин</label>
                       <input id="login" type="text" placeholder="Введите ваш логин" value={formData.login} onChange={handleChange} required />

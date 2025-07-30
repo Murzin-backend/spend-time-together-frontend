@@ -75,6 +75,7 @@
     padding: 2px;
     cursor: pointer;
     position: relative;
+    overflow: hidden;
 }
 
 .rbc-off-range .rbc-date-cell-content {
@@ -82,7 +83,7 @@
 }
 
 .rbc-today {
-  background-color: rgba(88, 166, 255, 0.1);
+  background-color: rgba(42, 157, 244, 0.1);
 }
 
 .rbc-date-cell-content {
@@ -94,7 +95,7 @@
 
 .rbc-event {
   box-sizing: border-box;
-  background: linear-gradient(45deg, #5865f2, #7289da);
+  background-image: linear-gradient(to right, #2a9df4, #1a8de4);
   border: none;
   color: #ffffff;
   border-radius: 4px;
@@ -113,6 +114,7 @@
 .rbc-event:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    filter: brightness(1.1);
 }
 
 .rbc-event-content {
@@ -151,6 +153,6 @@
 }
 
 .rbc-show-more:hover {
-  background-color: #58a6ff;
+  background-color: #2a9df4;
   color: #ffffff;
 }

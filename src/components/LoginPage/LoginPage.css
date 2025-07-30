@@ -24,8 +24,31 @@
     gap: 1.5rem;
     width: 100%;
     max-width: 400px;
-    text-align: left;
+    text-align: center;
     border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.auth-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.auth-logo {
+    width: 180px;
+    height: 180px;
+    animation: spin-logo 25s linear infinite;
+}
+
+@keyframes spin-logo {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .login-page-container form {
@@ -35,17 +58,17 @@
 }
 
 .login-page-container h2 {
-    margin: 0 0 1rem 0;
+    margin: 0;
     color: #ffffff;
     font-family: 'Poppins', sans-serif;
-    font-size: 2rem;
-    font-weight: 700;
-    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
     letter-spacing: 1px;
 }
 
 .form-group {
     width: 100%;
+    text-align: left;
 }
 
 .form-group label {
@@ -92,6 +115,13 @@
     width: 100%;
     margin-top: 1rem;
     box-shadow: 0 4px 12px rgba(42, 157, 244, 0.2);
+}
+
+.login-button:disabled {
+    background-image: linear-gradient(to right, #5c7a94, #4c6a84);
+    cursor: not-allowed;
+    transform: none;
+    filter: brightness(0.8);
 }
 
 .login-button:hover {

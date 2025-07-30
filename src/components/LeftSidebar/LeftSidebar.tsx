@@ -37,7 +37,10 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
     return (
         <aside className={`left-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
             <div className="sidebar-header">
-                <h3>Комнаты</h3>
+                <div className="logo-container">
+                    <img src="/assets/icon.png" alt="Иконка" className="sidebar-icon" />
+                    <h3>Комнаты</h3>
+                </div>
             </div>
             <div className="sidebar-content">
                 <div className="rooms-list-sidebar">

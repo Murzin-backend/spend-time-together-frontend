@@ -13,7 +13,7 @@ const RightSidebar: React.FC<RightSidebarProps> = ({ selectedRoom, onInvite, onL
         <div className="right-sidebar">
             {selectedRoom ? (
                 <>
-                    <h4>Управление группой</h4>
+                    <h4>Управление комнатой</h4>
                     <div className="room-details">
                         <strong>{selectedRoom.name}</strong>
                         <p>{selectedRoom.description || 'Нет описания'}</p>
