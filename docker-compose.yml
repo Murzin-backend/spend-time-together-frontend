@@ -2,7 +2,10 @@ version: '3.8'
 
 services:
   frontend:
-    build: .
+    build:
+      context: .
+      args:
+        - REACT_APP_API_URL=https://spend-time-together.ru/api
     container_name: spend-time-together-frontend
     ports:
       - "3000:3000"
