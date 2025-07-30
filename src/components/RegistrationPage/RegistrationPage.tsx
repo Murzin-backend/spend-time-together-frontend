@@ -4,6 +4,7 @@ import axios from 'axios';
 import Notification from '../Notification/Notification.tsx';
 import api from "../../api/axiosConfig.ts";
 import './RegistrationPage.css';
+import logo from '../../assets/logo.png';
 
 const RegistrationPage = () => {
     const [formData, setFormData] = useState({
@@ -32,7 +33,6 @@ const RegistrationPage = () => {
         try {
             const { confirmPassword, ...dataToSend } = formData;
             await api.post('/auth/registration', dataToSend);
-            // Сразу авторизуем и перенаправляем на главную страницу
             await api.post('/auth/login', { login: dataToSend.login, password: dataToSend.password });
             navigate('/home', { state: { message: 'Регистрация прошла успешно! Добро пожаловать!', isNewUser: true } });
         } catch (error) {
@@ -56,7 +56,7 @@ const RegistrationPage = () => {
             />
             <div className="registration-page-container">
                 <div className="auth-header">
-                    <img src="/assets/logo.png" alt="Логотип" className="auth-logo" />
+                    <img src={logo} alt="Логотип" className="auth-logo" />
                     <h2>Создание аккаунта</h2>
                 </div>
                 <p className="subtitle">Присоединяйтесь к нам, чтобы начать!</p>

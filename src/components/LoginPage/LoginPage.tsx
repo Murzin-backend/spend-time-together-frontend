@@ -4,6 +4,7 @@ import './LoginPage.css';
 import api from "../../api/axiosConfig.ts";
 import Notification from "../Notification/Notification.tsx";
 import axios from "axios";
+import logo from '../../assets/logo.png'; // 1. Импортируйте логотип
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
@@ -31,7 +32,6 @@ const LoginPage = () => {
         setIsLoading(true);
         try {
             await api.post('/auth/login', formData);
-            // Немедленный переход на домашнюю страницу с сообщением об успехе
             navigate('/home', { state: { message: 'Вы успешно вошли!', isNewUser: false } });
         } catch (error) {
             if (axios.isAxiosError(error) && (error.response?.status === 401 || error.response?.status === 404)) {
@@ -54,7 +54,7 @@ const LoginPage = () => {
           />
           <div className="login-page-container">
               <div className="auth-header">
-                  <img src="/assets/logo.png" alt="Логотип" className="auth-logo" />
+                  <img src={logo} alt="Логотип" className="auth-logo" />
                   <h2>Spend Time Together</h2>
               </div>
               <form onSubmit={handleSubmit}>

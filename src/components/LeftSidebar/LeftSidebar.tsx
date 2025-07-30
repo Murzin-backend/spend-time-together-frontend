@@ -1,5 +1,6 @@
 import React from 'react';
 import './LeftSidebar.css';
+import icon from '../../assets/icon.png';
 
 interface User {
     id: number;
@@ -38,7 +39,7 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
         <aside className={`left-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
             <div className="sidebar-header">
                 <div className="logo-container">
-                    <img src="/assets/icon.png" alt="Иконка" className="sidebar-icon" />
+                    <img src={icon} alt="Иконка" className="sidebar-icon" />
                     <h3>Комнаты</h3>
                 </div>
             </div>
