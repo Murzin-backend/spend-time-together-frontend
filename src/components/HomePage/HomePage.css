@@ -292,3 +292,7 @@
     text-align: center;
     padding: 2rem 0;
 }
+
+.modal-form .form-group {
+    width: 100%;
+}

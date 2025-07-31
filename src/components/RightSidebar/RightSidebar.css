@@ -86,22 +86,26 @@
 
 .logout-section {
     margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid #30363d;
 }
 
 .logout-section .logout {
     width: 100%;
     padding: 0.8rem;
     border-radius: 6px;
-    border: none;
-    background-image: linear-gradient(to right, #d94848, #c73e3e);
-    box-shadow: 0 4px 12px rgba(217, 72, 72, 0.2);
-    color: #fff;
-    font-weight: 600;
+    border: 1px solid rgba(248, 81, 73, 0.4);
+    background-color: transparent;
+    color: #f85149;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .logout-section .logout:hover {
-    filter: brightness(1.1);
+    background-color: #f85149;
+    border-color: #f85149;
+    color: #fff;
     transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(248, 81, 73, 0.2);
 }

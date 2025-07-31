@@ -1,5 +1,6 @@
 import React from 'react';
 import './LeftSidebar.css';
+import api from '../../api/axiosConfig.ts';
 import logo from '../../assets/logo.png';
 
 interface User {
@@ -7,6 +8,8 @@ interface User {
     login: string;
     first_name: string;
     last_name: string;
+    avatar_url?: string | null;
+    telegram_link?: string | null;
 }
 
 interface Room {
@@ -35,6 +38,8 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
     handleOpenCreateModal,
     handleOpenJoinModal,
 }) => {
+    const backendUrl = api.defaults.baseURL ? api.defaults.baseURL.split('/api')[0] : '';
+
     return (
         <aside className={`left-sidebar ${isCollapsed ? 'collapsed' : ''}`}>
             <div className="sidebar-header">
@@ -61,12 +66,18 @@ const LeftSidebar: React.FC<LeftSidebarProps> = ({
                                     ) : (
                                         <ul className="users-list">
                                             {isSelected && (roomUsers || []).length > 0 ? (
-                                                (roomUsers || []).map(user => (
-                                                    <li key={user.id} className="user-item">
-                                                        <div className="user-avatar"></div>
-                                                        <span className="user-name">{user.first_name} {user.last_name}</span>
-                                                    </li>
-                                                ))
+                                                (roomUsers || []).map(user => {
+                                                    return (
+                                                        <li key={user.id} className="user-item">
+                                                            {user.avatar_url ? (
+                                                                <img src={backendUrl + user.avatar_url} alt={user.first_name} className="user-avatar" />
+                                                            ) : (
+                                                                <div className="user-avatar"></div>
+                                                            )}
+                                                            <span className="user-name">{user.first_name} {user.last_name}</span>
+                                                        </li>
+                                                    );
+                                                })
                                             ) : isSelected ? (
                                                 <li className="user-item-empty">В комнате пусто</li>
                                             ) : null}

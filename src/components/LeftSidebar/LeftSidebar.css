@@ -147,12 +147,9 @@
 .user-item {
     display: flex;
     align-items: center;
-    padding: 0.6rem 0.5rem;
-    font-size: 0.9rem;
-    color: #b9bbbe;
-    white-space: nowrap;
-    border-radius: 4px;
-    transition: background-color 0.2s, color 0.2s;
+    padding: 8px 15px;
+    transition: background-color 0.2s ease;
+    position: relative;
 }
 
 .user-item:hover {
@@ -185,9 +182,8 @@
 }
 
 .user-item-empty {
-    padding: 0.6rem 0.5rem;
-    font-size: 0.9rem;
-    color: #72767d;
+    padding: 10px 15px;
+    color: #888;
     white-space: nowrap;
     font-style: italic;
 }

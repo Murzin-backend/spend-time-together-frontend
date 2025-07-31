@@ -1,0 +1,161 @@
+/* Backdrop for the modal */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
+}
+
+/* Base styles for the modal content, aligned with RightSidebar */
+.confirmation-modal {
+    background-color: #161b22; /* Match sidebar */
+    color: #c9d1d9; /* Match sidebar */
+    padding: 24px;
+    border-radius: 8px; /* Consistent with sidebar buttons */
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border: 1px solid #30363d; /* Match sidebar */
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    animation: fadeInScale 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Icon styles */
+.confirmation-modal__icon-wrapper {
+    margin: 0 auto 8px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: rgba(217, 72, 72, 0.15); /* Danger color tint */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.confirmation-modal__icon {
+    color: #d94848; /* Danger color */
+    width: 28px;
+    height: 28px;
+}
+
+/* Content styles */
+.confirmation-modal__content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.confirmation-modal__title {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.2rem; /* Match sidebar h4 */
+    font-weight: 600;
+    color: #fff;
+}
+
+.confirmation-modal__body {
+    margin: 0;
+    font-size: 0.9rem; /* Match sidebar p */
+    line-height: 1.6;
+    color: #8b949e; /* Match sidebar p */
+    word-wrap: break-word;
+}
+
+.confirmation-modal__body strong {
+    color: #c9d1d9;
+    font-weight: 500;
+}
+
+/* Action buttons area */
+.confirmation-modal__actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+/* Generic button styles */
+.btn {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px; /* Match sidebar buttons */
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.btn:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
+}
+
+/* Button variants */
+.btn--secondary {
+    background-color: #3a3f4c; /* Match sidebar placeholder button */
+    color: #c9d1d9;
+}
+
+.btn--secondary:hover {
+    background-color: #4a4f5c;
+}
+
+.danger {
+    background-image: linear-gradient(to right, #d94848, #c73e3e); /* Match sidebar danger button */
+    box-shadow: 0 4px 12px rgba(217, 72, 72, 0.2);
+}
+
+/* Close button */
+.confirmation-modal__close-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8b949e; /* Match sidebar text */
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.confirmation-modal__close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    transform: rotate(90deg);
+}
