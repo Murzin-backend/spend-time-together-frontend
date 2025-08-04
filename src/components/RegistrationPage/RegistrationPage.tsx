@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import Notification from '../Notification/Notification.tsx';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import api from "../../api/axiosConfig.ts";
 import './RegistrationPage.css';
 import logo from '../../assets/logo.png';
@@ -22,7 +23,6 @@ const RegistrationPage = () => {
     const [avatarFile, setAvatarFile] = useState<File | null>(null);
     const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [notification, setNotification] = useState({ message: '', type: '' as 'success' | 'error' });
     const navigate = useNavigate();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,7 +34,7 @@ const RegistrationPage = () => {
             const file = e.target.files[0];
 
             if (!ALLOWED_AVATAR_CONTENT_TYPES.includes(file.type)) {
-                setNotification({ message: `Неверный формат файла. Разрешены: ${ALLOWED_AVATAR_CONTENT_TYPES.join(', ')}`, type: 'error' });
+                toast.error(`Неверный формат файла. Разрешены: ${ALLOWED_AVATAR_CONTENT_TYPES.join(', ')}`);
                 e.target.value = '';
                 setAvatarFile(null);
                 setAvatarPreview(null);
@@ -42,7 +42,7 @@ const RegistrationPage = () => {
             }
 
             if (file.size > AVATAR_MAX_SIZE_MB * 1024 * 1024) {
-                setNotification({ message: `Размер файла не должен превышать ${AVATAR_MAX_SIZE_MB} МБ.`, type: 'error' });
+                toast.error(`Размер файла не должен превышать ${AVATAR_MAX_SIZE_MB} МБ.`);
                 e.target.value = '';
                 setAvatarFile(null);
                 setAvatarPreview(null);
@@ -66,10 +66,39 @@ const RegistrationPage = () => {
         }
     };
 
+    const validateForm = () => {
+        const newErrors: string[] = [];
+        if (!formData.login) newErrors.push('Логин обязателен для заполнения.');
+        if (!formData.email) {
+            newErrors.push('Email обязателен для заполнения.');
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.push('Некорректный формат email.');
+        }
+        if (!formData.first_name) newErrors.push('Имя обязательно для заполнения.');
+        if (!formData.password) {
+            newErrors.push('Пароль обязателен для заполнения.');
+        } else if (formData.password.length < 8) {
+            newErrors.push('Пароль должен содержать не менее 8 символов.');
+        } else if (!/[a-zA-Z]/.test(formData.password) || !/\d/.test(formData.password)) {
+            newErrors.push('Пароль должен содержать хотя бы одну букву и одну цифру.');
+        }
+        if (formData.password !== formData.confirmPassword) {
+            newErrors.push('Пароли не совпадают.');
+        }
+        if (formData.telegram_link && !/^https?:\/\/t\.me\/\w+$/.test(formData.telegram_link)) {
+            newErrors.push('Некорректная ссылка на Telegram.');
+        }
+
+        if (newErrors.length > 0) {
+            newErrors.forEach(error => toast.error(error));
+            return false;
+        }
+        return true;
+    };
+
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (formData.password !== formData.confirmPassword) {
-            setNotification({ message: 'Пароли не совпадают!', type: 'error' });
+        if (!validateForm()) {
             return;
         }
         setIsLoading(true);
@@ -92,7 +121,7 @@ const RegistrationPage = () => {
                         } else if (detail.includes("exceed")) {
                             errorMessage = `Размер файла слишком большой. Максимальный размер: ${AVATAR_MAX_SIZE_MB}МБ.`;
                         }
-                        setNotification({ message: errorMessage, type: 'error' });
+                        toast.error(errorMessage);
                         setIsLoading(false);
                         return;
                     }
@@ -105,9 +134,9 @@ const RegistrationPage = () => {
             navigate('/home', { state: { message: 'Регистрация прошла успешно! Добро пожаловать!', isNewUser: true } });
         } catch (error) {
             if (axios.isAxiosError(error) && error.response?.status === 409) {
-                setNotification({ message: 'Пользователь с таким логином или email уже существует.', type: 'error' });
+                toast.error('Пользователь с таким логином или email уже существует.');
             } else {
-                setNotification({ message: 'Неизвестная ошибка.', type: 'error' });
+                toast.error('Неизвестная ошибка при регистрации.');
                 console.error(error);
             }
         } finally {
@@ -117,10 +146,17 @@ const RegistrationPage = () => {
 
     return (
         <div className="auth-container">
-            <Notification
-                message={notification.message}
-                type={notification.type}
-                onClose={() => setNotification({ message: '', type: 'success' })}
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
             />
             <div className="registration-page-container">
                 <div className="auth-header">
@@ -151,7 +187,7 @@ const RegistrationPage = () => {
                         <label htmlFor="telegram_link">Ссылка на Telegram (необязательно)</label>
                         <input id="telegram_link" type="text" placeholder="https://t.me/username" value={formData.telegram_link} onChange={handleChange} />
                     </div>
-                    <div className="form-group avatar-upload-group">
+                    <div className="form-group">
                         <label>Аватар (необязательно)</label>
                         <div className="avatar-upload-container">
                             <input id="avatar" type="file" accept="image/png, image/jpeg" onChange={handleFileChange} style={{ display: 'none' }} />
