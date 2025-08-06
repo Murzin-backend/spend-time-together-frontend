@@ -1,0 +1,79 @@
+.game-search-container {
+    position: relative;
+    width: 100%;
+}
+
+.game-search-container input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.8rem 1rem;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 6px;
+    color: #c9d1d9;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.game-search-container input:focus {
+    outline: none;
+    border-color: #58a6ff;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-top: none;
+    border-radius: 0 0 6px 6px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    z-index: 10;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.search-results li {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.search-results li:hover {
+    background-color: #21262d;
+}
+
+.result-image {
+    width: 80px;
+    height: 45px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.spinner-small {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    border: 2px solid #30363d;
+    border-top-color: #58a6ff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+

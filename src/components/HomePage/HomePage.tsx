@@ -224,6 +224,10 @@ const HomePage = () => {
         setIsDayModalOpen(true);
     };
 
+    const handleNavigateToActivity = (activityId: number) => {
+        navigate(`/activity/${activityId}`);
+    };
+
     const handleLogout = () => {
         navigate('/login');
     };
@@ -445,7 +449,7 @@ const HomePage = () => {
                                 events
                                     .filter(e => format(e.start, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd'))
                                     .map(event => (
-                                        <div key={event.id} className="event-item" onClick={() => handleEventClick(event)}>
+                                        <div key={event.id} className="event-item" onClick={() => handleNavigateToActivity(event.id)}>
                                             <span className="event-icon">{event.icon}</span>
                                             <div className="event-details">
                                                 <span className="event-time">{format(event.start, 'HH:mm')}</span>

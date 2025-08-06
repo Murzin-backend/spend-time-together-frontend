@@ -1,4 +1,5 @@
 import React from 'react';
+import Modal from '../Modal/Modal.tsx';
 import './ConfirmationModal.css';
 
 interface ConfirmationModalProps {
@@ -9,7 +10,6 @@ interface ConfirmationModalProps {
     body: React.ReactNode;
     confirmText?: string;
     cancelText?: string;
-    confirmButtonClass?: string;
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -19,16 +19,15 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     title,
     body,
     confirmText = 'Покинуть',
-    cancelText = 'Отмена',
-    confirmButtonClass = 'danger'
+    cancelText = 'Отмена'
 }) => {
     if (!isOpen) {
         return null;
     }
 
     return (
-        <div className="modal-backdrop" onClick={onClose}>
-            <div className="confirmation-modal" onClick={(e) => e.stopPropagation()}>
+        <Modal onClose={onClose} isOpen={isOpen}>
+            <div className="confirmation-modal">
                 <div className="confirmation-modal__icon-wrapper">
                     <svg className="confirmation-modal__icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
@@ -42,7 +41,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 </div>
                 <div className="confirmation-modal__actions">
                     <button onClick={onClose} className="btn btn--secondary">{cancelText}</button>
-                    <button onClick={onConfirm} className={`btn ${confirmButtonClass}`}>{confirmText}</button>
+                    <button onClick={onConfirm} className="btn btn--danger">{confirmText}</button>
                 </div>
                 <button onClick={onClose} className="confirmation-modal__close-btn" aria-label="Закрыть">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -51,7 +50,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                     </svg>
                 </button>
             </div>
-        </div>
+        </Modal>
     );
 };
 

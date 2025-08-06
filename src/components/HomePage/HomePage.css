@@ -255,11 +255,12 @@
     border-left: 4px solid #5865f2;
     position: relative;
     cursor: pointer;
-    transition: background-color 0.2s ease-in-out;
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
 
 .event-item:hover {
     background-color: #36393f;
+    transform: translateY(-2px);
 }
 
 .event-icon {
