@@ -6,7 +6,6 @@ services:
       context: .
       args:
         - REACT_APP_API_URL=https://spend-time-together.ru/api
-        - REACT_WS_APP_API_URL=wss://spend-time-together.ru/api/ws
     container_name: spend-time-together-frontend
     ports:
       - "3000:3000"

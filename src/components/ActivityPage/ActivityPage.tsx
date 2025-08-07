@@ -488,12 +488,13 @@ const ActivityPage: React.FC = () => {
             return;
         }
 
-        const wsShortUrl = process.env.REACT_WS_APP_API_URL
-            ? process.env.REACT_WS_APP_API_URL
-            : "ws://localhost:8000/api/ws"
-        ;
-
-        const wsUrl =  wsShortUrl + `/activity/${activityId}`;
+        let wsUrl;
+        const wsShortUrl = api.defaults.baseURL;
+        if (wsShortUrl === 'http://localhost:8000/api') {
+            wsUrl = wsShortUrl.replace(/^http/, 'ws') + `/ws/activity/${activityId}`;
+        } else {
+            wsUrl = wsShortUrl.replace(/^https/, 'wss') + `/ws/activity/${activityId}`;
+        }
 
         console.log(`Connecting to WebSocket at: ${wsUrl}`);
 
