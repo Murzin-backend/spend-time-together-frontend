@@ -93,7 +93,8 @@ const ActivityPage: React.FC = () => {
     const { activityId } = useParams<{ activityId: string }>();
     const ws = React.useRef<WebSocket | null>(null);
 
-    const backendUrl = 'http://localhost:8000';
+    const backendUrl = api.defaults.baseURL ? api.defaults.baseURL.split('/api')[0] : '';
+
 
     const [isConnected, setIsConnected] = React.useState(false);
     const [activityStatus, setActivityStatus] = React.useState<'PLANNED' | 'IN_PROGRESS' | 'FINISHED' | 'CANCELLED'>('PLANNED');
@@ -487,7 +488,12 @@ const ActivityPage: React.FC = () => {
             return;
         }
 
-        const wsUrl = `ws://localhost:8000/api/ws/activity/${activityId}`;
+        const wsShortUrl = process.env.REACT_WS_APP_API_URL
+            ? process.env.REACT_WS_APP_API_URL
+            : "ws://localhost:8000/api/ws"
+        ;
+
+        const wsUrl =  wsShortUrl + `/activity/${activityId}`;
 
         console.log(`Connecting to WebSocket at: ${wsUrl}`);
 
