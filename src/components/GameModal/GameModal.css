@@ -1,0 +1,224 @@
+.game-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1100;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+.game-modal-content {
+    background-color: #161b22;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    color: #c9d1d9;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    position: relative;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.game-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(22, 27, 34, 0.8);
+    border: none;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    font-size: 24px;
+    color: #c9d1d9;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.game-modal-close:hover {
+    background-color: #30363d;
+    color: #ffffff;
+}
+
+.game-modal-header {
+    position: relative;
+}
+
+.game-modal-image {
+    width: 100%;
+    height: 250px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px 10px 0 0;
+    position: relative;
+}
+
+.game-modal-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to top, #161b22, transparent);
+}
+
+.game-modal-title {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    margin: 0;
+    color: #ffffff;
+    font-size: 2rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 1;
+}
+
+.game-modal-body {
+    padding: 20px;
+}
+
+.game-modal-rating {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.rating-label {
+    margin-right: 10px;
+    color: #8b949e;
+}
+
+.rating-value {
+    font-weight: bold;
+    padding: 3px 10px;
+    border-radius: 15px;
+}
+
+.rating-value.high {
+    background-color: #238636;
+    color: white;
+}
+
+.rating-value.medium {
+    background-color: #f0883e;
+    color: white;
+}
+
+.rating-value.low {
+    background-color: #f85149;
+    color: white;
+}
+
+.game-modal-info {
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.info-label {
+    margin-right: 10px;
+    color: #8b949e;
+    min-width: 120px;
+}
+
+.game-modal-description h3 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #8b949e;
+    font-size: 1.1rem;
+}
+
+.game-modal-description p {
+    line-height: 1.6;
+}
+
+.game-modal-description div {
+    line-height: 1.6;
+}
+
+.game-modal-description img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.game-modal-store {
+    margin-top: 25px;
+    display: flex;
+    justify-content: center;
+}
+
+.store-button {
+    background-color: #2f81f7;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+}
+
+.store-button:hover {
+    background-color: #1f6feb;
+}
+
+.rawg-button {
+    background-color: #6c7a89;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+}
+
+.rawg-button:hover {
+    background-color: #566573;
+}
+
+.search-button {
+    background-color: #ea4335;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: background-color 0.2s;
+}
+
+.search-button:hover {
+    background-color: #d33426;
+}

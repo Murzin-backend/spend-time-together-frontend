@@ -58,6 +58,16 @@
     flex-shrink: 0;
 }
 
+.metacritic-score {
+    background-color: #2f81f7;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-left: auto;
+}
+
 .spinner-small {
     position: absolute;
     top: 50%;
@@ -71,9 +81,18 @@
     animation: spin 1s linear infinite;
 }
 
+.search-disabled-indicator {
+    position: absolute;
+    top: 50%;
+    right: 1rem;
+    transform: translateY(-50%);
+    color: #238636;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
 @keyframes spin {
     to {
         transform: translateY(-50%) rotate(360deg);
     }
 }
-

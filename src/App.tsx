@@ -14,6 +14,7 @@ import './components/Modal/Modal.css';
 import './components/LeftSidebar/LeftSidebar.css';
 import './components/RightSidebar/RightSidebar.css';
 import './components/GameSearchInput/GameSearchInput.css';
+import './components/GameModal/GameModal.css';
 
 function App() {
     return (
