@@ -170,6 +170,15 @@
     margin-top: 25px;
     display: flex;
     justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.store-links {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .store-button {
@@ -182,11 +191,13 @@
     cursor: pointer;
     text-decoration: none;
     display: inline-block;
-    transition: background-color 0.2s;
+    transition: all 0.3s ease;
 }
 
 .store-button:hover {
     background-color: #1f6feb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(47, 129, 247, 0.3);
 }
 
 .rawg-button {

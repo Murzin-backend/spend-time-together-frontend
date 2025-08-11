@@ -1,0 +1,311 @@
+.roulette-container {
+    position: relative;
+    background-color: #161b22;
+    border-radius: 12px;
+    padding: 2rem;
+    border: 2px solid #30363d;
+    transition: all 0.3s ease;
+    min-height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.roulette-container.active {
+    border-color: #58a6ff;
+    box-shadow: 0 0 20px rgba(88, 166, 255, 0.3);
+}
+
+.roulette-container.final-showdown {
+    border-color: #f0883e;
+    box-shadow: 0 0 30px rgba(240, 136, 62, 0.5);
+    animation: finalPulse 1s infinite alternate;
+}
+
+.roulette-container.single-variant {
+    border-color: #238636;
+    box-shadow: 0 0 30px rgba(35, 134, 54, 0.5);
+}
+
+@keyframes finalPulse {
+    from {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(240, 136, 62, 0.5);
+    }
+    to {
+        transform: scale(1.02);
+        box-shadow: 0 0 40px rgba(240, 136, 62, 0.8);
+    }
+}
+
+.roulette-wheel-circular {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wheel-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #238636, #2ea043);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 10;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.wheel-pointer {
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.spinning-indicator {
+    font-size: 1.2rem;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.variants-circle {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.roulette-variant-card {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120px;
+    height: 80px;
+    background-color: #21262d;
+    background-size: cover;
+    background-position: center;
+    border: 2px solid #30363d;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    transform-origin: center center;
+}
+
+.roulette-variant-card.highlighted {
+    border-color: #58a6ff;
+    box-shadow: 0 0 15px rgba(88, 166, 255, 0.8);
+    transform: scale(1.1);
+    z-index: 5;
+}
+
+.roulette-variant-card.eliminating {
+    border-color: #f85149;
+    box-shadow: 0 0 20px rgba(248, 81, 73, 0.8);
+    animation: eliminate 2s ease-in-out;
+}
+
+.roulette-variant-card.winner {
+    border-color: #238636;
+    box-shadow: 0 0 25px rgba(35, 134, 54, 0.8);
+    transform: scale(1.2);
+    animation: winner 1s ease-in-out infinite alternate;
+    z-index: 8;
+}
+
+.roulette-variant-card.eliminated {
+    opacity: 0.3;
+    filter: grayscale(100%);
+    transform: scale(0.8);
+}
+
+@keyframes eliminate {
+    0% {
+        transform: scale(1.1);
+        filter: brightness(1);
+    }
+    50% {
+        transform: scale(1.3);
+        filter: brightness(1.5) hue-rotate(180deg);
+    }
+    100% {
+        transform: scale(0.8);
+        filter: brightness(0.5) grayscale(100%);
+        opacity: 0.3;
+    }
+}
+
+@keyframes winner {
+    from {
+        transform: scale(1.2);
+        filter: brightness(1) hue-rotate(0deg);
+    }
+    to {
+        transform: scale(1.3);
+        filter: brightness(1.3) hue-rotate(10deg);
+    }
+}
+
+.variant-content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.3));
+    padding: 8px;
+    color: white;
+}
+
+.variant-name {
+    font-weight: bold;
+    font-size: 0.8rem;
+    margin-bottom: 2px;
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.variant-user {
+    font-size: 0.7rem;
+    color: #c9d1d9;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.highlight-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(88, 166, 255, 0.3) 50%, transparent 70%);
+    animation: shine 0.8s ease-in-out infinite;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.roulette-status {
+    text-align: center;
+    padding: 1rem;
+    margin-top: 2rem;
+    background-color: #0d1117;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+}
+
+.status-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #58a6ff;
+}
+
+.no-variants-message {
+    text-align: center;
+    color: #8b949e;
+    font-size: 1.1rem;
+    padding: 2rem;
+}
+
+.single-variant-display {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.winner-card {
+    width: 300px;
+    height: 200px;
+    background-color: #21262d;
+    background-size: cover;
+    background-position: center;
+    border: 3px solid #238636;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 0 30px rgba(35, 134, 54, 0.5);
+    animation: victoryPulse 2s ease-in-out infinite alternate;
+}
+
+@keyframes victoryPulse {
+    from {
+        transform: scale(1);
+        box-shadow: 0 0 20px rgba(35, 134, 54, 0.5);
+    }
+    to {
+        transform: scale(1.05);
+        box-shadow: 0 0 40px rgba(35, 134, 54, 0.8);
+    }
+}
+
+.winner-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95), rgba(0, 0, 0, 0.3));
+    padding: 1.5rem;
+    color: white;
+    text-align: center;
+}
+
+.winner-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+    color: #ffd700;
+}
+
+.winner-game {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 0.3rem;
+}
+
+.winner-user {
+    font-size: 1rem;
+    color: #c9d1d9;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .roulette-wheel-circular {
+        width: 300px;
+        height: 300px;
+    }
+
+    .roulette-variant-card {
+        width: 100px;
+        height: 70px;
+    }
+
+    .variant-name {
+        font-size: 0.7rem;
+    }
+
+    .variant-user {
+        font-size: 0.6rem;
+    }
+
+    .winner-card {
+        width: 250px;
+        height: 150px;
+    }
+}

@@ -7,6 +7,7 @@ import logo from '../../assets/logo.png';
 import Notification, { NotificationProps } from '../Notification/Notification.tsx';
 import GameModal from '../GameModal/GameModal.tsx';
 import {getGameDetails, getGameStoreUrl, searchGames} from "../../api/rawgApi.ts";
+import GameFinishedScreen from '../GameFinishedScreen/GameFinishedScreen.tsx';
 
 interface User {
     id: number;
@@ -120,7 +121,98 @@ const ActivityPage: React.FC = () => {
         game: null
     });
 
-    
+    const [highlightedVariantId, setHighlightedVariantId] = React.useState<number | null>(null);
+    const [rouletteAnimationSpeed, setRouletteAnimationSpeed] = React.useState(150);
+    const rouletteIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
+
+    const startRouletteHighlightAnimation = React.useCallback(() => {
+        const activeVariants = participants.filter(p => p.variant && !p.isEliminated);
+        if (activeVariants.length <= 1) return;
+
+        let currentIndex = 0;
+        let speed = 150;
+        let spinCounter = 0;
+        const totalSpins = Math.floor(Math.random() * 3) + 5;
+
+        const animate = () => {
+            setHighlightedVariantId(activeVariants[currentIndex].userId);
+            currentIndex = (currentIndex + 1) % activeVariants.length;
+
+            if (currentIndex === 0) {
+                spinCounter++;
+            }
+
+            if (spinCounter >= totalSpins) {
+                speed = Math.min(speed + 15, 800);
+            } else if (spinCounter >= totalSpins - 2) {
+                speed = Math.min(speed + 5, 400);
+            }
+
+            setRouletteAnimationSpeed(speed);
+
+            rouletteIntervalRef.current = setTimeout(animate, speed);
+        };
+
+        setTimeout(() => {
+            setNotification({
+                message: 'Крутим барабан!',
+                type: 'info'
+            });
+            animate();
+        }, 300);
+    }, [participants]);
+
+    const stopRouletteHighlightAnimation = React.useCallback(() => {
+        if (rouletteIntervalRef.current) {
+            clearTimeout(rouletteIntervalRef.current);
+            rouletteIntervalRef.current = null;
+        }
+        setHighlightedVariantId(null);
+        setRouletteAnimationSpeed(150);
+    }, []);
+
+    const handleVariantElimination = React.useCallback((userId: number, variant: string) => {
+        stopRouletteHighlightAnimation();
+
+        setHighlightedVariantId(userId);
+        setEliminatingUserId(userId);
+
+        setNotification({
+            message: `Вариант "${variant}" выбывает!`,
+            type: 'warning'
+        });
+
+        setTimeout(() => {
+            setParticipants(prev => prev.map(p =>
+                p.userId === userId ? { ...p, isEliminated: true } : p
+            ));
+
+            setHighlightedVariantId(null);
+            setEliminatingUserId(null);
+
+            const remainingCount = participants.filter(p => p.variant && !p.isEliminated && p.userId !== userId).length;
+
+            if (remainingCount === 2) {
+                setFinalShowdown(true);
+                setNotification({
+                    message: '🔥 Финальная битва! Осталось два варианта!',
+                    type: 'warning'
+                });
+
+                // Запускаем замедленную анимацию для финальной битвы через небольшую паузу
+                setTimeout(() => {
+                    startRouletteHighlightAnimation();
+                }, 1500);
+            }
+            // Если осталось больше 2-х вариантов, продолжаем обычную анимацию
+            else if (remainingCount > 2) {
+                setTimeout(() => {
+                    startRouletteHighlightAnimation();
+                }, 500);
+            }
+        }, 2000);
+    }, [participants, startRouletteHighlightAnimation, stopRouletteHighlightAnimation]);
+
     const fetchCurrentUser = async () => {
         try {
             const response = await api.get('/users/me');
@@ -195,6 +287,28 @@ const ActivityPage: React.FC = () => {
         }
     };
 
+    React.useEffect(() => {
+        if (activityInfo && activityInfo.status === 'finished' && activityInfo.winner_user_id) {
+            console.log("Активность завершена, winner_id:", activityInfo.winner_user_id);
+            setActivityStatus('FINISHED');
+
+            // Устанавливаем победителя из информации об активности
+            const winnerUser = participants.find(p => p.userId === activityInfo.winner_user_id);
+            if (winnerUser) {
+                setWinner({
+                    userId: activityInfo.winner_user_id,
+                    variant: getVariantName(winnerUser)
+                });
+            } else {
+                // Если участник не найден, создаем базовую информацию о победителе
+                setWinner({
+                    userId: activityInfo.winner_user_id,
+                    variant: 'Неизвестный вариант'
+                });
+            }
+        }
+    }, [activityInfo, participants]);
+
     const pingServer = () => {
         ws.current?.send(JSON.stringify({ action: "ping" }));
     };
@@ -222,7 +336,63 @@ const ActivityPage: React.FC = () => {
     };
 
     const startGame = () => {
+        setRouletteActive(true);
+        startRouletteAnimation();
+
         ws.current?.send(JSON.stringify({ action: "start_game" }));
+
+        setNotification({
+            message: 'Запуск рулетки...',
+            type: 'info'
+        });
+    };
+
+    const startRouletteAnimation = () => {
+        stopRouletteHighlightAnimation();
+
+        const activeVariants = participants.filter(p => p.variant && !p.isEliminated);
+        if (activeVariants.length <= 1) return;
+
+        let currentIndex = 0;
+        let speed = 150;
+        let cyclesCompleted = 0;
+        const maxCycles = 10;
+
+        const animate = () => {
+
+            setHighlightedVariantId(activeVariants[currentIndex].userId);
+
+
+            currentIndex = (currentIndex + 1) % activeVariants.length;
+
+
+            if (currentIndex === 0) {
+                cyclesCompleted++;
+            }
+
+
+            if (cyclesCompleted > maxCycles * 0.7) {
+
+                speed += 15;
+            } else if (cyclesCompleted > maxCycles * 0.5) {
+
+                speed += 8;
+            } else if (cyclesCompleted > maxCycles * 0.3) {
+
+                speed += 3;
+            }
+
+
+            if (cyclesCompleted < maxCycles) {
+                rouletteIntervalRef.current = setTimeout(animate, speed);
+            } else {
+
+                setHighlightedVariantId(null);
+            }
+        };
+
+
+        animate();
     };
 
     
@@ -498,7 +668,7 @@ const ActivityPage: React.FC = () => {
 
         console.log(`Connecting to WebSocket at: ${wsUrl}`);
 
-        
+
         setWsInitialized(true);
 
         ws.current = new WebSocket(wsUrl);
@@ -656,44 +826,55 @@ const ActivityPage: React.FC = () => {
 
                 case 'users_in_activity':
                     if (message.users) {
-                        
-                        const currentVariants = new Map(
-                            participants.map(p => [p.userId, {
-                                variant: p.variant,
-                                gameImage: p.gameImage,
-                                metacritic: p.metacritic,
-                                api_game_id: p.api_game_id,
-                                background_image: p.background_image,
-                                description: p.description,
-                                rating: p.rating,
-                                release_date: p.release_date,
-                                stores: p.stores,
-                                isEliminated: p.isEliminated
-                            }])
-                        );
+                        console.log("Получено сообщение users_in_activity, сохраняем варианты");
 
-                        
+
+                        const allCurrentVariants = new Map();
+                        participants.forEach(p => {
+                            if (p.variant) {
+                                allCurrentVariants.set(p.userId, {
+                                    variant: p.variant,
+                                    gameImage: p.gameImage,
+                                    metacritic: p.metacritic,
+                                    api_game_id: p.api_game_id,
+                                    background_image: p.background_image,
+                                    description: p.description,
+                                    rating: p.rating,
+                                    release_date: p.release_date,
+                                    stores: p.stores,
+                                    isEliminated: p.isEliminated
+                                });
+                            }
+                        });
+
+
                         const userVariants = message.users.map((user: User) => {
-                            const existingData = currentVariants.get(user.id);
+                            const savedVariantData = allCurrentVariants.get(user.id);
                             return {
                                 userId: user.id,
-                                variant: existingData?.variant || null,
-                                isEliminated: existingData?.isEliminated || false,
+                                variant: savedVariantData?.variant || null,
+                                isEliminated: savedVariantData?.isEliminated || false,
                                 firstName: user.first_name,
                                 lastName: user.last_name,
                                 avatarUrl: user.avatar_url,
-                                gameImage: existingData?.gameImage,
-                                metacritic: existingData?.metacritic,
-                                api_game_id: existingData?.api_game_id,
-                                background_image: existingData?.background_image,
-                                description: existingData?.description,
-                                rating: existingData?.rating,
-                                release_date: existingData?.release_date,
-                                stores: existingData?.stores
+                                gameImage: savedVariantData?.gameImage,
+                                metacritic: savedVariantData?.metacritic,
+                                api_game_id: savedVariantData?.api_game_id,
+                                background_image: savedVariantData?.background_image,
+                                description: savedVariantData?.description,
+                                rating: savedVariantData?.rating,
+                                release_date: savedVariantData?.release_date,
+                                stores: savedVariantData?.stores
                             };
                         });
 
                         setParticipants(userVariants);
+
+
+                        setTimeout(() => {
+                            console.log("Запрашиваем варианты после users_in_activity");
+                            requestActivityVariants();
+                        }, 100);
                     }
                     break;
 
@@ -824,7 +1005,7 @@ const ActivityPage: React.FC = () => {
                     if (message.variants_count) {
                         setVariantsCount(message.variants_count);
                     }
-                    setRouletteActive(true);
+
                     setNotification({
                         message: `Рулетка запущена! Вариантов: ${message.variants_count || 'неизвестно'}`,
                         type: 'info'
@@ -833,56 +1014,88 @@ const ActivityPage: React.FC = () => {
 
                 case 'variant_eliminated':
                     if (message.user_id) {
+
+                        stopRouletteHighlightAnimation();
+
+
+                        setHighlightedVariantId(message.user_id);
                         setEliminatingUserId(message.user_id);
 
-                        
-                        const remainingActive = participants.filter(p => p.variant && !p.isEliminated && p.userId !== message.user_id).length;
-                        if (remainingActive === 2) {
-                            setFinalShowdown(true);
-                            setNotification({
-                                message: `Осталось два варианта! Финальное противостояние!`,
-                                type: 'warning'
-                            });
-                        }
+                        setNotification({
+                            message: `Вариант "${message.variant}" выбывает!`,
+                            type: 'warning'
+                        });
+
 
                         setTimeout(() => {
+
                             setParticipants(prev => prev.map(p =>
                                 p.userId === message.user_id ? { ...p, isEliminated: true } : p
                             ));
+
+
                             setEliminatingUserId(null);
 
-                            
-                            if (remainingActive === 2) {
+
+                            const remainingVariants = participants.filter(p =>
+                                p.variant && !p.isEliminated && p.userId !== message.user_id
+                            );
+
+
+                            if (remainingVariants.length > 1) {
                                 setTimeout(() => {
-                                    setFinalShowdown(false);
-                            }, 3000); 
+                                    startRouletteAnimation();
+                                }, 300);
+
+
+                                if (remainingVariants.length === 2) {
+                                    setFinalShowdown(true);
+                                    setNotification({
+                                        message: '🔥 Финальная битва! Осталось два варианта!',
+                                        type: 'warning'
+                                    });
+                                }
                             }
                         }, 1500);
-
-                        setNotification({
-                            message: `Вариант выбыл: ${message.variant}`,
-                            type: 'warning'
-                        });
                     }
                     break;
 
                 case 'winner_declared':
                     if (message.user_id && message.variant) {
-                        setWinner({ userId: message.user_id, variant: message.variant });
-                        setActivityStatus('FINISHED');
-                        setRouletteActive(false);
-                        setFinalShowdown(false);
 
-                        const winnerName = participants.find(p => p.userId === message.user_id)
-                            ? getUserDisplayName(participants.find(p => p.userId === message.user_id)!)
-                            : `Пользователь ${message.user_id}`;
+                        stopRouletteHighlightAnimation();
+
+
+                        setHighlightedVariantId(message.user_id);
+                        setNotification({
+                            message: '🎉 Определяем победителя...',
+                            type: 'info'
+                        });
+
+
+                        setTimeout(() => {
+
+                            const winnerName = participants.find(p => p.userId === message.user_id)
+                                ? getUserDisplayName(participants.find(p => p.userId === message.user_id)!)
+                                : `Пользователь ${message.user_id}`;
+
 
                         setNotification({
-                            message: `Победитель: ${winnerName} с вариантом ${message.variant}!`,
+                            message: `🏆 Победитель: ${winnerName} с вариантом ${message.variant}!`,
                             type: 'success'
                         });
-                    }
-                    break;
+
+
+                        setTimeout(() => {
+                            setWinner({ userId: message.user_id, variant: message.variant });
+                            setActivityStatus('FINISHED');
+                            setRouletteActive(false);
+                            setFinalShowdown(false);
+                            setHighlightedVariantId(null);
+                        }, 2000);
+                    }, 2000);
+                }
+                break;
 
                 case 'error':
                     setError(message.message || 'Произошла неизвестная ошибка');
@@ -912,7 +1125,13 @@ const ActivityPage: React.FC = () => {
             }
             setWsInitialized(false);
         };
-    }, [activityId]); 
+    }, [activityId]);
+
+    React.useEffect(() => {
+        return () => {
+            stopRouletteHighlightAnimation();
+        };
+    }, [stopRouletteHighlightAnimation]);
 
     React.useEffect(() => {
         if (timer === null || timer <= 0) return;
@@ -922,7 +1141,7 @@ const ActivityPage: React.FC = () => {
         return () => clearInterval(interval);
     }, [timer]);
 
-    
+
     const handleSubmitVariant = (e: React.FormEvent) => {
         e.preventDefault();
         if (myVariant && !hasUserSubmittedVariant()) {
@@ -1077,18 +1296,33 @@ const ActivityPage: React.FC = () => {
         }
 
         return activeVariants.map(p => {
-            const variantCardClass = `variant-card ${eliminatingUserId === p.userId ? 'eliminating' : ''} ${rouletteActive ? 'roulette-spinning' : ''}`;
+            let variantCardClass = 'variant-card';
 
-            
+
+            if (highlightedVariantId === p.userId) {
+                if (eliminatingUserId === p.userId) {
+                    variantCardClass += ' eliminating';
+                } else if (finalShowdown) {
+                    variantCardClass += ' final-highlight';
+                } else {
+                    variantCardClass += ' highlighted-variant';
+                }
+            }
+
+
+            if (finalShowdown && !eliminatingUserId) {
+                variantCardClass += ' final-card';
+            }
+
+
+            if (rouletteActive && !eliminatingUserId && highlightedVariantId !== p.userId) {
+                variantCardClass += ' variant-active';
+            }
+
             const userName = getUserDisplayName(p);
-
-            
             const gameImage = getVariantImage(p);
-
-            
             const gameName = getVariantName(p);
 
-            
             const handleCardClick = () => {
                 console.log("Клик по карточке варианта:", p.variant);
                 openGameModal(p.variant, p);
@@ -1098,7 +1332,7 @@ const ActivityPage: React.FC = () => {
                 <div
                     key={p.userId}
                     className={variantCardClass}
-                    style={{ backgroundImage: `url(${gameImage})` }}
+                    style={{ backgroundImage: gameImage ? `url(${gameImage})` : undefined }}
                     onClick={handleCardClick}
                 >
                     <div className="variant-overlay">
@@ -1116,6 +1350,37 @@ const ActivityPage: React.FC = () => {
             );
         });
     };
+
+
+    const getRouletteVariants = () => {
+        return participants
+            .filter(p => p.variant)
+            .map(p => ({
+                userId: p.userId,
+                variant: getVariantName(p),
+                gameImage: getVariantImage(p),
+                userName: getUserDisplayName(p),
+                isEliminated: p.isEliminated
+            }));
+    };
+
+
+    const getFinishedGameVariants = () => {
+        return participants
+            .filter(p => p.variant)
+            .map(p => ({
+                userId: p.userId,
+                variant: getVariantName(p),
+                gameImage: getVariantImage(p),
+                userName: getUserDisplayName(p),
+                api_game_id: p.api_game_id,
+                description: p.description,
+                metacritic: p.metacritic,
+                isWinner: winner ? p.userId === winner.userId : false,
+                avatarUrl: p.avatarUrl
+            }));
+    };
+
 
     return (
         <div className="activity-container">
@@ -1195,56 +1460,82 @@ const ActivityPage: React.FC = () => {
                 </div>
 
                 <div className="game-panel">
-                    {activityStatus !== 'FINISHED' && (
-                        <div className="game-controls">
-                            {timer !== null && <div className="timer">Осталось времени: {timer}с</div>}
-                            <form className="variant-form">
-                                <GameSearchInput
-                                    onGameSelect={handleGameSelect} 
-                                    disabled={hasUserSubmittedVariant()}
-                                    defaultValue={
-                                        
-                                        currentUser && participants.find(p => Number(p.userId) === Number(currentUser.id) && p.variant)
-                                            ? getVariantName(participants.find(p => Number(p.userId) === Number(currentUser.id))!)
-                                            : ''
-                                    }
-                                />
-                            </form>
-                            {hasUserSubmittedVariant() && (
-                                <div className="variant-submitted-notice">
-                                    Ваш вариант уже отправлен. Нельзя отправить больше одного варианта.
+                    {/* Показываем экран результатов если игра завершена */}
+                    {(activityStatus === 'FINISHED' || (activityInfo?.status === 'finished' && activityInfo?.winner_user_id)) ? (
+                        <div className="game-finished-wrapper">
+                            <GameFinishedScreen
+                                winner={winner || { userId: activityInfo?.winner_user_id || 0, variant: 'Неизвестный вариант' }}
+                                allVariants={getFinishedGameVariants()}
+                                onOpenGameModal={openGameModal}
+                                isCreator={isCreator}
+                                backendUrl={backendUrl}
+                            />
+                        </div>
+                    ) : (
+                        <>
+                            {activityStatus !== 'FINISHED' && (
+                                <div className="game-controls">
+                                    {timer !== null && <div className="timer">Осталось времени: {timer}с</div>}
+                                    <form className="variant-form">
+                                        <GameSearchInput
+                                            onGameSelect={handleGameSelect}
+                                            disabled={hasUserSubmittedVariant()}
+                                            defaultValue={
+                                                currentUser && participants.find(p => Number(p.userId) === Number(currentUser.id) && p.variant)
+                                                    ? getVariantName(participants.find(p => Number(p.userId) === Number(currentUser.id))!)
+                                                    : ''
+                                            }
+                                        />
+                                    </form>
+                                    {hasUserSubmittedVariant() && (
+                                        <div className="variant-submitted-notice">
+                                            Ваш вариант уже отправлен. Нельзя отправить больше одного варианта.
+                                        </div>
+                                    )}
+
+                                    {/* Отладочная информация */}
+                                    <div className="debug-notice">
+                                        {currentUser && (
+                                            <div>
+                                                Текущий пользователь: {currentUser.first_name} {currentUser.last_name} (ID: {currentUser.id})<br/>
+                                                Статус варианта: {hasUserSubmittedVariant() ? 'Вариант отправлен' : 'Вариант не отправлен'}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                             )}
 
-                            {/* Отладочная информация */}
-                            <div className="debug-notice">
-                                {currentUser && (
-                                    <div>
-                                        Текущий пользователь: {currentUser.first_name} {currentUser.last_name} (ID: {currentUser.id})<br/>
-                                        Статус варианта: {hasUserSubmittedVariant() ? 'Вариант отправлен' : 'Вариант не отправлен'}
+                            <div className={`roulette-container ${rouletteActive ? 'active' : ''} ${finalShowdown ? 'final-showdown' : ''}`}>
+                                <h2>Варианты в игре</h2>
+
+                                {/* Обертка для эффекта рулетки */}
+                                <div className={`roulette-drum ${finalShowdown ? 'final-showdown-grid' : ''}`}>
+                                    <div className="variants-grid">
+                                        {renderVariants()}
+                                    </div>
+
+                                    {/* Сообщение о финальной битве */}
+                                    {finalShowdown && !eliminatingUserId && (
+                                        <div className="roulette-message">
+                                            Финальная битва!
+                                        </div>
+                                    )}
+                                </div>
+
+                                {rouletteActive && (
+                                    <div className="roulette-status">
+                                        <div className="status-text">
+                                            {finalShowdown ? '🔥 Финальная битва!' : '🎰 Выбираем победителя...'}
+                                        </div>
+                                        {rouletteAnimationSpeed > 0 && (
+                                            <div className="roulette-indicator">
+                                                Скорость вращения: {Math.round(1000 / rouletteAnimationSpeed * 60)} об/мин
+                                            </div>
+                                        )}
                                     </div>
                                 )}
                             </div>
-                        </div>
-                    )}
-
-                    <div className={`roulette-container ${rouletteActive ? 'active' : ''} ${finalShowdown ? 'final-showdown' : ''}`}>
-                        <h2>Варианты в игре:</h2>
-                        <div className="variants-grid">
-                            {renderVariants()}
-                        </div>
-                    </div>
-
-                    {winner && (
-                        <div className="winner-announcement">
-                            <h2>Победитель!</h2>
-                            <p>Пользователь <strong>{
-                                participants.find(p => p.userId === winner.userId)
-                                    ? getUserDisplayName(participants.find(p => p.userId === winner.userId)!)
-                                    : winner.userId
-                            }</strong> победил с вариантом:</p>
-                            <div className="winner-variant">{winner.variant}</div>
-                        </div>
+                        </>
                     )}
                 </div>
             </main>

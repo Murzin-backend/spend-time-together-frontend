@@ -13,7 +13,6 @@ export interface RawgGame {
     id: number;
     name: string;
     background_image: string;
-    // Добавляем недостающие поля
     description?: string;
     released?: string;
     rating?: number;
@@ -41,8 +40,7 @@ export const searchGames = async (query: string): Promise<RawgGame[]> => {
         const response = await rawgApiClient.get('/games', {
             params: {
                 search: query,
-                page_size: 5, // Ограничиваем количество результатов
-                // Запрашиваем дополнительные поля
+                page_size: 5,
                 fields: 'id,name,background_image,released,rating,metacritic,description',
             },
         });
@@ -53,7 +51,6 @@ export const searchGames = async (query: string): Promise<RawgGame[]> => {
     }
 };
 
-// Улучшенная функция получения детальной информации о игре
 export const getGameDetails = async (gameId: number): Promise<RawgGame | null> => {
     try {
         console.log(`Запрос детальной информации о игре ${gameId}`);
@@ -76,7 +73,6 @@ export const getGameStoreUrl = async (gameId: number): Promise<string | null> =>
         const stores = response.data.results;
         if (!stores || stores.length === 0) return null;
 
-        // Отдаем предпочтение Steam, затем другим магазинам
         const steamStore = stores.find(s => s.store_id === 1);
         if (steamStore) return steamStore.url;
 
@@ -86,7 +82,7 @@ export const getGameStoreUrl = async (gameId: number): Promise<string | null> =>
         const gogStore = stores.find(s => s.store_id === 5);
         if (gogStore) return gogStore.url;
 
-        return stores[0].url; // Возвращаем первый доступный
+        return stores[0].url;
     } catch (error) {
         console.error(`Error fetching stores for game ${gameId}:`, error);
         return null;

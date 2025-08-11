@@ -25,9 +25,9 @@ const GameSearchInput: React.FC<GameSearchInputProps> = ({ onGameSelect, disable
     const [results, setResults] = useState<RawgGame[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [showResults, setShowResults] = useState(false);
-    const debouncedQuery = useDebounce(query, 500);
-    const [hasSelected, setHasSelected] = useState(!!defaultValue); // Если есть defaultValue, считаем что выбор уже сделан
-    const inputRef = useRef<HTMLInputElement>(null); // Реф для сохранения фокуса
+    const debouncedQuery = useDebounce(query, 1000); // Увеличиваем с 500 до 1000ms
+    const [hasSelected, setHasSelected] = useState(!!defaultValue);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     // Применяем значение по умолчанию при изменении disabled или defaultValue
     useEffect(() => {
@@ -47,9 +47,9 @@ const GameSearchInput: React.FC<GameSearchInputProps> = ({ onGameSelect, disable
         }
     }, [disabled]);
 
-    // Выполняем поиск на основе debouncedQuery
+    // Упрощаем эффект поиска
     useEffect(() => {
-        if (debouncedQuery && !hasSelected) {
+        if (debouncedQuery && !hasSelected && !disabled) {
             const performSearch = async () => {
                 setIsLoading(true);
                 setShowResults(true);
@@ -60,18 +60,6 @@ const GameSearchInput: React.FC<GameSearchInputProps> = ({ onGameSelect, disable
                     console.error("Error searching games:", error);
                 } finally {
                     setIsLoading(false);
-                    // Возвращаем фокус на инпут после завершения поиска
-                    if (inputRef.current) {
-                        inputRef.current.focus();
-
-                        // Сохраняем позицию курсора
-                        const cursorPosition = inputRef.current.selectionStart;
-                        setTimeout(() => {
-                            if (inputRef.current) {
-                                inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
-                            }
-                        }, 0);
-                    }
                 }
             };
 
@@ -80,7 +68,7 @@ const GameSearchInput: React.FC<GameSearchInputProps> = ({ onGameSelect, disable
             setResults([]);
             setShowResults(false);
         }
-    }, [debouncedQuery, hasSelected]);
+    }, [debouncedQuery, hasSelected, disabled]);
 
     const handleSelect = async (game: RawgGame) => {
         setIsLoading(true);
@@ -125,27 +113,19 @@ const GameSearchInput: React.FC<GameSearchInputProps> = ({ onGameSelect, disable
         }
     };
 
-    // Сохраняем позицию курсора при изменении запроса
+    // Улучшаем обработчик изменения инпута
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        // Если компонент заблокирован, не обрабатываем изменения
         if (disabled) return;
 
         const newQuery = e.target.value;
-        const cursorPosition = e.target.selectionStart;
-
         setQuery(newQuery);
 
         if (newQuery !== query) {
             setHasSelected(false);
         }
 
-        // Сохраняем позицию курсора после обновления состояния
-        setTimeout(() => {
-            if (inputRef.current) {
-                inputRef.current.focus();
-                inputRef.current.setSelectionRange(cursorPosition, cursorPosition);
-            }
-        }, 0);
+        // Убираем сохранение позиции курсора, так как это вызывает проблемы
+        // Браузер сам справится с этим
     };
 
     // Обработчик клика вне компонента для скрытия результатов

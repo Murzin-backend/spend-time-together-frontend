@@ -15,6 +15,7 @@ import './components/LeftSidebar/LeftSidebar.css';
 import './components/RightSidebar/RightSidebar.css';
 import './components/GameSearchInput/GameSearchInput.css';
 import './components/GameModal/GameModal.css';
+import './components/GameFinishedScreen/GameFinishedScreen.css';
 
 function App() {
     return (

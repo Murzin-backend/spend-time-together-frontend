@@ -43,6 +43,53 @@ const GameModal: React.FC<GameModalProps> = ({ game, onClose }) => {
         rating: game.rating && game.rating !== 0 ? game.rating : undefined
     };
 
+    // Определяем, что показывать вместо ссылки на магазин, если её нет
+    const renderStoreLink = () => {
+        if (cleanGameData.storeUrl) {
+            return (
+                <a href={cleanGameData.storeUrl} target="_blank" rel="noopener noreferrer" className="store-button">
+                    Открыть в магазине
+                </a>
+            );
+        }
+
+        // Если нет прямой ссылки на магазин, но есть ID игры
+        if (cleanGameData.id) {
+            return (
+                <div className="store-links">
+                    <a
+                        href={`https://store.steampowered.com/search/?term=${encodeURIComponent(cleanGameData.name)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="store-button"
+                    >
+                        Найти в Steam
+                    </a>
+                    <a
+                        href={`https://rawg.io/games/${cleanGameData.id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rawg-button"
+                    >
+                        Детали на RAWG.io
+                    </a>
+                </div>
+            );
+        }
+
+        // Если нет даже ID игры
+        return (
+            <a
+                href={`https://www.google.com/search?q=${encodeURIComponent(cleanGameData.name + ' купить игру')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="search-button"
+            >
+                Найти игру в Google
+            </a>
+        );
+    };
+
     return (
         <div className="game-modal-overlay" onClick={onClose}>
             <div className="game-modal-content" onClick={handleContentClick}>
@@ -95,39 +142,9 @@ const GameModal: React.FC<GameModalProps> = ({ game, onClose }) => {
                         )}
                     </div>
 
-                    {cleanGameData.storeUrl && (
-                        <div className="game-modal-store">
-                            <a href={cleanGameData.storeUrl} target="_blank" rel="noopener noreferrer" className="store-button">
-                                Открыть в магазине
-                            </a>
-                        </div>
-                    )}
-
-                    {!cleanGameData.storeUrl && cleanGameData.id && (
-                        <div className="game-modal-store">
-                            <a
-                                href={`https://rawg.io/games/${cleanGameData.id}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="rawg-button"
-                            >
-                                Открыть на RAWG.io
-                            </a>
-                        </div>
-                    )}
-
-                    {!cleanGameData.storeUrl && !cleanGameData.id && (
-                        <div className="game-modal-store">
-                            <a
-                                href={`https://www.google.com/search?q=${encodeURIComponent(cleanGameData.name + ' игра')}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="search-button"
-                            >
-                                Искать в Google
-                            </a>
-                        </div>
-                    )}
+                    <div className="game-modal-store">
+                        {renderStoreLink()}
+                    </div>
                 </div>
             </div>
         </div>
