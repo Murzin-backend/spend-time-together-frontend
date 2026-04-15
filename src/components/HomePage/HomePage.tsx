@@ -56,12 +56,18 @@ const eventPlaceholders = [
     "Смотрим новый сезон сериала",
 ];
 
-const gameIcons = ['🎮', '🎲', '🎯', '🚀', '👾', '🤖', '💥', '🏆', '⚔️', '🔥', '🐲', '✨'];
+const typeIcons: Record<string, string> = {
+    video_games: '🎮',
+    board_games: '🎲',
+    movies: '🎬',
+};
 
 const CustomEvent = ({ event }: { event: any }) => {
+    const icon = typeIcons[event.type] || '🎯';
+    const isFinished = event.status === 'finished';
     return (
-        <div className="custom-event">
-            <span role="img" aria-label="icon" className="event-icon-calendar">{event.icon}</span>
+        <div className={`custom-event ${isFinished ? 'custom-event--finished' : ''}`}>
+            <span role="img" aria-label="icon" className="event-icon-calendar">{isFinished ? '✅' : icon}</span>
             {event.title}
         </div>
     );
@@ -127,13 +133,28 @@ const HomePage = () => {
         fetchRooms();
     }, []);
 
+    // Auto-refresh calendar and room users every 30 seconds
+    useEffect(() => {
+        if (!selectedRoom) return;
+        const interval = setInterval(async () => {
+            fetchActivities(selectedRoom.id);
+            try {
+                const usersResponse = await api.get(`/rooms/${selectedRoom.id}/users`);
+                setRoomUsers(usersResponse?.data?.payload?.data || []);
+            } catch (e) {
+                // silently fail on background refresh
+            }
+        }, 30000);
+        return () => clearInterval(interval);
+    }, [selectedRoom]);
+
     const fetchActivities = async (roomId: number) => {
         try {
             const activitiesResponse = await api.get(`/activities/${roomId}/all`);
             const activities: Activity[] = activitiesResponse?.data?.payload?.data || [];
 
             const calendarEvents = activities
-                .filter(activity => activity.scheduled_at && activity.status === 'planned')
+                .filter(activity => activity.scheduled_at && (activity.status === 'planned' || activity.status === 'finished'))
                 .map(activity => {
                     const startDate = new Date(activity.scheduled_at as string);
                     const potentialEndDate = new Date(startDate.getTime() + 2 * 60 * 60 * 1000);
@@ -147,7 +168,8 @@ const HomePage = () => {
                         start: startDate,
                         end: endDate,
                         type: activity.type,
-                        icon: gameIcons[Math.floor(Math.random() * gameIcons.length)],
+                        status: activity.status,
+                        icon: typeIcons[activity.type] || '🎯',
                     };
                 });
             setEvents(calendarEvents);
@@ -293,8 +315,12 @@ const HomePage = () => {
     };
 
     const eventPropGetter = (event: any) => {
+        const classes = [`rbc-event--type-${event.type || 'default'}`];
+        if (event.status === 'finished') {
+            classes.push('rbc-event--finished');
+        }
         return {
-            'data-type': event.type,
+            className: classes.join(' '),
         };
     };
 
@@ -449,11 +475,12 @@ const HomePage = () => {
                                 events
                                     .filter(e => format(e.start, 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd'))
                                     .map(event => (
-                                        <div key={event.id} className="event-item" onClick={() => handleNavigateToActivity(event.id)}>
-                                            <span className="event-icon">{event.icon}</span>
+                                        <div key={event.id} className={`event-item event-item--type-${event.type} ${event.status === 'finished' ? 'event-item--finished' : ''}`} onClick={() => handleNavigateToActivity(event.id)}>
+                                            <span className="event-icon">{event.status === 'finished' ? '✅' : (typeIcons[event.type] || '🎯')}</span>
                                             <div className="event-details">
                                                 <span className="event-time">{format(event.start, 'HH:mm')}</span>
                                                 <span className="event-title">{event.title}</span>
+                                                {event.status === 'finished' && <span className="event-status-badge">Завершено</span>}
                                             </div>
                                         </div>
                                     ))

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDebounce } from '../../hooks/useDebounce.ts';
-import { searchGames, getGameStoreUrl, getGameDetails, RawgGame } from '../../api/rawgApi.ts';
+import { searchGames, getGameStores, getGameDetails, RawgGame, GameStoreInfo } from '../../api/rawgApi.ts';
 import './GameSearchInput.css';
 
 export interface GameVariant {
@@ -12,6 +12,8 @@ export interface GameVariant {
     released?: string;
     rating?: number;
     metacritic?: number;
+    stores?: GameStoreInfo[];
+    platforms?: Array<{ platform: { id: number; name: string; slug: string } }>;
 }
 
 interface GameSearchInputProps {
@@ -72,15 +74,19 @@ const GameSearchInput: React.FC<GameSearchInputProps> = ({ onGameSelect, disable
 
     const handleSelect = async (game: RawgGame) => {
         setIsLoading(true);
-        setHasSelected(true); // Устанавливаем флаг выбора
+        setHasSelected(true);
 
         try {
-            // Всегда получаем полную информацию о выбранной игре
             console.log("Получаем информацию о выбранной игре:", game.name);
-            const gameDetails = await getGameDetails(game.id);
-            const storeUrl = await getGameStoreUrl(game.id);
+            const [gameDetails, stores] = await Promise.all([
+                getGameDetails(game.id),
+                getGameStores(game.id),
+            ]);
 
-            // Создаем объект с максимально полной информацией
+            const storeUrl = stores.length > 0
+                ? (stores.find(s => s.store.id === 1)?.url || stores[0].url)
+                : null;
+
             const selectedGame: GameVariant = {
                 id: game.id,
                 name: game.name,
@@ -89,19 +95,18 @@ const GameSearchInput: React.FC<GameSearchInputProps> = ({ onGameSelect, disable
                 description: gameDetails?.description || game.description || "",
                 released: gameDetails?.released || game.released,
                 rating: gameDetails?.rating || game.rating,
-                metacritic: gameDetails?.metacritic || game.metacritic
+                metacritic: gameDetails?.metacritic || game.metacritic,
+                stores: stores,
+                platforms: gameDetails?.platforms || game.platforms || [],
             };
 
-            // Передаем выбранную игру наверх
             onGameSelect(selectedGame);
 
-            // Обновляем интерфейс
             setQuery(game.name);
             setResults([]);
             setShowResults(false);
         } catch (error) {
             console.error("Ошибка при получении детальной информации об игре:", error);
-            // Даже в случае ошибки отправляем базовую информацию
             onGameSelect({
                 id: game.id,
                 name: game.name,

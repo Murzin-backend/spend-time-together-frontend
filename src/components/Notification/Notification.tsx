@@ -9,31 +9,31 @@ export interface NotificationProps {
     duration?: number;
 }
 
-const Notification: React.FC<NotificationProps> = ({
-    message,
-    type,
-    onClose,
-    autoClose = true,
-    duration = 5000
+const Notification: React.FC<NotificationProps> = ({ 
+    message, 
+    type, 
+    onClose, 
+    autoClose = true, 
+    duration = 5000 
 }) => {
     const [isVisible, setIsVisible] = useState(true);
-
+    
     useEffect(() => {
         if (autoClose) {
             const timer = setTimeout(() => {
                 setIsVisible(false);
                 if (onClose) setTimeout(onClose, 300); // Даем время для анимации
             }, duration);
-
+            
             return () => clearTimeout(timer);
         }
     }, [autoClose, duration, onClose]);
-
+    
     const handleClose = () => {
         setIsVisible(false);
         if (onClose) setTimeout(onClose, 300);
     };
-
+    
     return (
         <div className={`notification ${type} ${isVisible ? 'visible' : 'hidden'}`}>
             <div className="notification-content">

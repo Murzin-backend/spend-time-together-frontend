@@ -35,8 +35,26 @@
     ```sh
     cd spend-time-together-frontend
     ```
-3.  Запустите Docker Compose для сборки и запуска приложения:
-    ```sh
-    docker-compose up --build
-    ```
-    Приложение откроется в вашем браузере по адресу `http://localhost:3000`.
+3.  Запустите Docker Compose для сборки и запуска приложения.
+
+### Локальная разработка (dev)
+
+Для локального тестирования используйте `docker-compose.dev.yml`. Фронтенд будет обращаться к бэкенду на `http://localhost:8000/api`:
+
+```sh
+docker-compose -f docker-compose.dev.yml up --build -d
+```
+
+Приложение будет доступно по адресу `http://localhost:3000`.
+
+> Убедитесь, что бэкенд (`spend-time-together`) запущен и доступен на порту 8000.
+
+### Продакшн
+
+Для продакшн-сборки используйте основной `docker-compose.yml`. Фронтенд будет обращаться к API на `https://spend-time-together.ru/api`:
+
+```sh
+docker-compose up --build -d
+```
+
+Приложение будет доступно на порту 80.

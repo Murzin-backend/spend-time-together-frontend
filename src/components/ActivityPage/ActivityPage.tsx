@@ -20,13 +20,14 @@ interface UserVariant {
     userId: number;
     variant: GameVariant | string | null;
     isEliminated: boolean;
+    isOnline?: boolean;
     firstName?: string;
     lastName?: string;
     avatarUrl?: string | null;
     username?: string;
     gameImage?: string;
     metacritic?: number;
-    api_game_id?: number; 
+    api_game_id?: number;
     background_image?: string;
     description?: string;
     release_date?: string;
@@ -124,6 +125,36 @@ const ActivityPage: React.FC = () => {
     const [highlightedVariantId, setHighlightedVariantId] = React.useState<number | null>(null);
     const [rouletteAnimationSpeed, setRouletteAnimationSpeed] = React.useState(150);
     const rouletteIntervalRef = React.useRef<NodeJS.Timeout | null>(null);
+
+    // Reactions
+    const [showReactionPanel, setShowReactionPanel] = React.useState(false);
+    const [activeReactions, setActiveReactions] = React.useState<Array<{
+        id: string;
+        userId: number;
+        username: string;
+        avatarUrl?: string | null;
+        reactionId: string;
+        timestamp: number;
+    }>>([]);
+
+    const REACTIONS = [
+        { id: 'greeting', emoji: '👋', text: 'Привет!' },
+        { id: 'well_played', emoji: '👏', text: 'Отлично!' },
+        { id: 'thanks', emoji: '🙏', text: 'Спасибо!' },
+        { id: 'oops', emoji: '😬', text: 'Ой-ой...' },
+        { id: 'threaten', emoji: '😈', text: 'Мне повезёт!' },
+        { id: 'wow', emoji: '😮', text: 'Ничего себе!' },
+    ];
+
+    const sendReaction = (reactionId: string) => {
+        if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+            ws.current.send(JSON.stringify({
+                action: "send_reaction",
+                payload: { reaction_id: reactionId }
+            }));
+        }
+        setShowReactionPanel(false);
+    };
 
     const startRouletteHighlightAnimation = React.useCallback(() => {
         const activeVariants = participants.filter(p => p.variant && !p.isEliminated);
@@ -336,9 +367,6 @@ const ActivityPage: React.FC = () => {
     };
 
     const startGame = () => {
-        setRouletteActive(true);
-        startRouletteAnimation();
-
         ws.current?.send(JSON.stringify({ action: "start_game" }));
 
         setNotification({
@@ -409,17 +437,14 @@ const ActivityPage: React.FC = () => {
             released: variant.released || "",
             rating: variant.rating || 0,
             metacritic: variant.metacritic || 0,
-            stores: [
-                {
-                    store: { id: 1, name: "Steam" },
-                    url: variant.storeUrl || ""
-                }
-            ],
-            platforms: [
-                {
-                    platform: { id: 4, name: "PC", slug: "pc" }
-                }
-            ]
+            stores: variant.stores && variant.stores.length > 0
+                ? variant.stores
+                : variant.storeUrl
+                    ? [{ store: { id: 1, name: "Steam" }, url: variant.storeUrl }]
+                    : [],
+            platforms: variant.platforms && variant.platforms.length > 0
+                ? variant.platforms
+                : [{ platform: { id: 4, name: "PC", slug: "pc" } }],
         };
 
         if (ws.current?.readyState === WebSocket.OPEN) {
@@ -449,29 +474,33 @@ const ActivityPage: React.FC = () => {
 
         
         if (participantData) {
-            const gameDetails = {
+            const storeUrl = participantData.stores && participantData.stores.length
+                ? participantData.stores[0].store_url
+                : null;
+
+            const gameDetails: GameVariant = {
                 id: participantData.api_game_id,
                 name: getVariantName(participantData),
-                image: participantData.gameImage || participantData.background_image,
-                storeUrl: participantData.stores && participantData.stores.length ? participantData.stores[0].store_url : null,
+                image: participantData.gameImage || participantData.background_image || null,
+                storeUrl: storeUrl,
                 description: participantData.description || "",
                 released: participantData.release_date,
                 rating: participantData.rating,
-                metacritic: participantData.metacritic
+                metacritic: participantData.metacritic,
+                stores: participantData.stores?.map(s => ({
+                    store: { id: s.store_id, name: s.store_name },
+                    url: s.store_url,
+                })),
             };
 
-            
             if (!gameDetails.description && participantData.api_game_id) {
                 try {
                     const apiData = await getGameDetails(participantData.api_game_id);
                     if (apiData) {
                         gameDetails.description = apiData.description || gameDetails.description;
-                        gameDetails.released = apiData.released || gameDetails.released;
-                        gameDetails.rating = apiData.rating || gameDetails.rating;
-                        gameDetails.metacritic = apiData.metacritic || gameDetails.metacritic;
                     }
                 } catch (error) {
-                    console.error("Ошибка при получении дополнительных данных:", error);
+                    console.error("Ошибка при получении описания:", error);
                 }
             }
 
@@ -754,7 +783,7 @@ const ActivityPage: React.FC = () => {
                         setParticipants(prev => {
                             const updatedParticipants = [...prev];
 
-                            
+
                             message.variants.forEach((variantData: any) => {
                                 const {
                                     user_id,
@@ -767,10 +796,13 @@ const ActivityPage: React.FC = () => {
                                     rating,
                                     release_date,
                                     stores,
-                                    platforms
+                                    platforms,
+                                    user_first_name,
+                                    user_last_name,
+                                    user_avatar_url,
                                 } = variantData;
 
-                                
+
                                 const variantObject = {
                                     name: name || variant,
                                     api_game_id,
@@ -782,11 +814,11 @@ const ActivityPage: React.FC = () => {
                                     stores
                                 };
 
-                                
+
                                 const participantIndex = updatedParticipants.findIndex(p => p.userId === user_id);
 
                                 if (participantIndex !== -1) {
-                                    
+
                                     updatedParticipants[participantIndex] = {
                                         ...updatedParticipants[participantIndex],
                                         variant: variantObject,
@@ -797,11 +829,14 @@ const ActivityPage: React.FC = () => {
                                         description: description,
                                         rating: rating,
                                         release_date: release_date,
-                                        stores: stores
+                                        stores: stores,
+                                        firstName: updatedParticipants[participantIndex].firstName || user_first_name,
+                                        lastName: updatedParticipants[participantIndex].lastName || user_last_name,
+                                        avatarUrl: updatedParticipants[participantIndex].avatarUrl || user_avatar_url,
                                     };
                                 } else {
-                                    
-                                    
+
+
                                     console.log("Добавляем нового участника, которого не было в списке:", user_id);
                                     updatedParticipants.push({
                                         userId: user_id,
@@ -814,7 +849,10 @@ const ActivityPage: React.FC = () => {
                                         description: description,
                                         rating: rating,
                                         release_date: release_date,
-                                        stores: stores
+                                        stores: stores,
+                                        firstName: user_first_name,
+                                        lastName: user_last_name,
+                                        avatarUrl: user_avatar_url,
                                     });
                                 }
                             });
@@ -848,12 +886,15 @@ const ActivityPage: React.FC = () => {
                         });
 
 
+                        const onlineUserIds = new Set(message.users.map((u: User) => u.id));
+
                         const userVariants = message.users.map((user: User) => {
                             const savedVariantData = allCurrentVariants.get(user.id);
                             return {
                                 userId: user.id,
                                 variant: savedVariantData?.variant || null,
                                 isEliminated: savedVariantData?.isEliminated || false,
+                                isOnline: true,
                                 firstName: user.first_name,
                                 lastName: user.last_name,
                                 avatarUrl: user.avatar_url,
@@ -867,6 +908,13 @@ const ActivityPage: React.FC = () => {
                                 stores: savedVariantData?.stores
                             };
                         });
+
+                        // Keep offline participants who have variants (they submitted but disconnected)
+                        const offlineWithVariants = participants.filter(
+                            p => p.variant && !onlineUserIds.has(p.userId)
+                        ).map(p => ({ ...p, isOnline: false }));
+
+                        userVariants.push(...offlineWithVariants);
 
                         setParticipants(userVariants);
 
@@ -940,15 +988,17 @@ const ActivityPage: React.FC = () => {
 
                 case 'user_joined':
                     if (message.user) {
-                        
+
                         setParticipants(prev => {
-                            if (prev.some(p => p.userId === message.user.id)) {
-                                return prev;
+                            const existing = prev.find(p => p.userId === message.user.id);
+                            if (existing) {
+                                return prev.map(p => p.userId === message.user.id ? { ...p, isOnline: true } : p);
                             }
                             return [...prev, {
                                 userId: message.user.id,
                                 variant: null,
                                 isEliminated: false,
+                                isOnline: true,
                                 firstName: message.user.first_name,
                                 lastName: message.user.last_name,
                                 avatarUrl: message.user.avatar_url
@@ -956,15 +1006,17 @@ const ActivityPage: React.FC = () => {
                         });
 
                     } else if (message.user_id) {
-                        
+
                         setParticipants(prev => {
-                            if (prev.some(p => p.userId === message.user_id)) {
-                                return prev;
+                            const existing = prev.find(p => p.userId === message.user_id);
+                            if (existing) {
+                                return prev.map(p => p.userId === message.user_id ? { ...p, isOnline: true } : p);
                             }
                             return [...prev, {
                                 userId: message.user_id,
                                 variant: null,
                                 isEliminated: false,
+                                isOnline: true,
                                 firstName: message.username,
                                 lastName: '',
                                 avatarUrl: message.avatar_url
@@ -982,11 +1034,37 @@ const ActivityPage: React.FC = () => {
 
                 case 'user_left':
                     if (message.user_id) {
-                        setParticipants(prev => prev.filter(p => p.userId !== message.user_id));
+                        setParticipants(prev => prev.map(p => {
+                            if (p.userId === message.user_id) {
+                                if (p.variant) {
+                                    return { ...p, isOnline: false };
+                                }
+                                return null;
+                            }
+                            return p;
+                        }).filter(Boolean) as typeof prev);
                         setNotification({
                             message: `Пользователь ${message.username || 'ID:' + message.user_id} покинул активность`,
                             type: 'info'
                         });
+                    }
+                    break;
+
+                case 'reaction':
+                    {
+                        const reactionKey = `${message.user_id}-${message.reaction_id}-${Date.now()}`;
+                        setActiveReactions(prev => [...prev, {
+                            id: reactionKey,
+                            userId: message.user_id,
+                            username: message.username,
+                            avatarUrl: message.avatar_url,
+                            reactionId: message.reaction_id,
+                            timestamp: Date.now()
+                        }]);
+                        // Auto-remove after 4 seconds
+                        setTimeout(() => {
+                            setActiveReactions(prev => prev.filter(r => r.id !== reactionKey));
+                        }, 4000);
                     }
                     break;
 
@@ -1005,58 +1083,57 @@ const ActivityPage: React.FC = () => {
                     if (message.variants_count) {
                         setVariantsCount(message.variants_count);
                     }
-
+                    setRouletteActive(true);
+                    startRouletteHighlightAnimation();
                     setNotification({
                         message: `Рулетка запущена! Вариантов: ${message.variants_count || 'неизвестно'}`,
                         type: 'info'
                     });
                     break;
 
-                case 'variant_eliminated':
+                case 'roulette_pre_eliminate':
                     if (message.user_id) {
-
                         stopRouletteHighlightAnimation();
-
-
                         setHighlightedVariantId(message.user_id);
                         setEliminatingUserId(message.user_id);
+                        setNotification({
+                            message: `Вариант "${message.variant}" под угрозой...`,
+                            type: 'warning'
+                        });
+                    }
+                    break;
+
+                case 'variant_eliminated':
+                    if (message.user_id) {
+                        setParticipants(prev => prev.map(p =>
+                            p.userId === message.user_id ? { ...p, isEliminated: true } : p
+                        ));
 
                         setNotification({
                             message: `Вариант "${message.variant}" выбывает!`,
                             type: 'warning'
                         });
 
-
                         setTimeout(() => {
-
-                            setParticipants(prev => prev.map(p =>
-                                p.userId === message.user_id ? { ...p, isEliminated: true } : p
-                            ));
-
-
                             setEliminatingUserId(null);
-
+                            setHighlightedVariantId(null);
 
                             const remainingVariants = participants.filter(p =>
                                 p.variant && !p.isEliminated && p.userId !== message.user_id
                             );
 
+                            if (remainingVariants.length === 2) {
+                                setFinalShowdown(true);
+                                setNotification({
+                                    message: 'Финальная битва! Осталось два варианта!',
+                                    type: 'warning'
+                                });
+                            }
 
                             if (remainingVariants.length > 1) {
-                                setTimeout(() => {
-                                    startRouletteAnimation();
-                                }, 300);
-
-
-                                if (remainingVariants.length === 2) {
-                                    setFinalShowdown(true);
-                                    setNotification({
-                                        message: '🔥 Финальная битва! Осталось два варианта!',
-                                        type: 'warning'
-                                    });
-                                }
+                                startRouletteHighlightAnimation();
                             }
-                        }, 1500);
+                        }, 800);
                     }
                     break;
 
@@ -1427,11 +1504,14 @@ const ActivityPage: React.FC = () => {
                         {participants.map(p => (
                             <li key={p.userId} className={`${p.isEliminated ? 'eliminated' : ''} ${p.variant ? 'submitted' : ''}`}>
                                 <div className="participant-info">
-                                    {p.avatarUrl ? (
-                                        <img src={backendUrl + p.avatarUrl} alt={p.firstName} className="participant-avatar" />
-                                    ) : (
-                                        <div className="participant-avatar">👤</div>
-                                    )}
+                                    <div className="participant-avatar-wrapper">
+                                        {p.avatarUrl ? (
+                                            <img src={backendUrl + p.avatarUrl} alt={p.firstName} className="participant-avatar" />
+                                        ) : (
+                                            <div className="participant-avatar">👤</div>
+                                        )}
+                                        <span className={`online-indicator ${p.isOnline !== false ? 'online' : 'offline'}`} />
+                                    </div>
                                     <span className="participant-name">{getUserDisplayName(p)}</span>
                                 </div>
                                 {p.variant && <span className="variant-badge">✓</span>}
@@ -1439,16 +1519,45 @@ const ActivityPage: React.FC = () => {
                         ))}
                     </ul>
 
-                    {/* Расширенная отладочная информация о статусе создателя */}
-                    <div className="creator-debug">
-                        <div>Текущий пользователь: {currentUser?.first_name} {currentUser?.last_name} (ID: {currentUser?.id})</div>
-                        <div>Статус создателя: {isCreator ? 'Да' : 'Нет'}</div>
-                        <div>Статус активности: {activityStatus}</div>
-                        <div>ID создателя активности: {activityInfo?.creator_user_id}</div>
-                        <div>Кнопка должна отображаться: {(isCreator && activityStatus === 'PLANNED') ? 'Да' : 'Нет'}</div>
+                    <div className="reactions-section">
+                        <button
+                            className="reaction-toggle-btn"
+                            onClick={() => setShowReactionPanel(!showReactionPanel)}
+                        >
+                            💬
+                        </button>
+                        {showReactionPanel && (
+                            <div className="reaction-panel">
+                                {REACTIONS.map(r => (
+                                    <button
+                                        key={r.id}
+                                        className="reaction-btn"
+                                        onClick={() => sendReaction(r.id)}
+                                    >
+                                        <span className="reaction-emoji">{r.emoji}</span>
+                                        <span className="reaction-text">{r.text}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
-                    {/* Изменено условие отображения кнопки на 'PLANNED' */}
+                    {/* Floating reactions */}
+                    <div className="floating-reactions">
+                        {activeReactions.map(r => {
+                            const reactionDef = REACTIONS.find(def => def.id === r.reactionId);
+                            return (
+                                <div key={r.id} className="floating-reaction">
+                                    <span className="floating-reaction-emoji">{reactionDef?.emoji}</span>
+                                    <div className="floating-reaction-content">
+                                        <span className="floating-reaction-user">{r.username}</span>
+                                        <span className="floating-reaction-text">{reactionDef?.text}</span>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
                     {isCreator && (activityStatus === 'PLANNED' || activityStatus === 'planned') && (
                         <button
                             onClick={startGame}
@@ -1493,15 +1602,6 @@ const ActivityPage: React.FC = () => {
                                         </div>
                                     )}
 
-                                    {/* Отладочная информация */}
-                                    <div className="debug-notice">
-                                        {currentUser && (
-                                            <div>
-                                                Текущий пользователь: {currentUser.first_name} {currentUser.last_name} (ID: {currentUser.id})<br/>
-                                                Статус варианта: {hasUserSubmittedVariant() ? 'Вариант отправлен' : 'Вариант не отправлен'}
-                                            </div>
-                                        )}
-                                    </div>
                                 </div>
                             )}
 
@@ -1527,11 +1627,6 @@ const ActivityPage: React.FC = () => {
                                         <div className="status-text">
                                             {finalShowdown ? '🔥 Финальная битва!' : '🎰 Выбираем победителя...'}
                                         </div>
-                                        {rouletteAnimationSpeed > 0 && (
-                                            <div className="roulette-indicator">
-                                                Скорость вращения: {Math.round(1000 / rouletteAnimationSpeed * 60)} об/мин
-                                            </div>
-                                        )}
                                     </div>
                                 )}
                             </div>

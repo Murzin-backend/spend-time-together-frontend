@@ -88,3 +88,24 @@ export const getGameStoreUrl = async (gameId: number): Promise<string | null> =>
         return null;
     }
 };
+
+export interface GameStoreInfo {
+    store: { id: number; name: string };
+    url: string;
+}
+
+export const getGameStores = async (gameId: number): Promise<GameStoreInfo[]> => {
+    try {
+        const response = await rawgApiClient.get<GameStoreResponse>(`/games/${gameId}/stores`);
+        const stores = response.data.results;
+        if (!stores || stores.length === 0) return [];
+
+        return stores.map(s => ({
+            store: { id: s.store_id, name: s.store.name },
+            url: s.url,
+        }));
+    } catch (error) {
+        console.error(`Error fetching stores for game ${gameId}:`, error);
+        return [];
+    }
+};

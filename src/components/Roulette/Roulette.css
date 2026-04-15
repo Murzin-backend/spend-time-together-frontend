@@ -132,16 +132,16 @@
 }
 
 @keyframes eliminate {
-    0% {
-        transform: scale(1.1);
+    0% { 
+        transform: scale(1.1); 
         filter: brightness(1);
     }
-    50% {
-        transform: scale(1.3);
+    50% { 
+        transform: scale(1.3); 
         filter: brightness(1.5) hue-rotate(180deg);
     }
-    100% {
-        transform: scale(0.8);
+    100% { 
+        transform: scale(0.8); 
         filter: brightness(0.5) grayscale(100%);
         opacity: 0.3;
     }
@@ -290,20 +290,20 @@
         width: 300px;
         height: 300px;
     }
-
+    
     .roulette-variant-card {
         width: 100px;
         height: 70px;
     }
-
+    
     .variant-name {
         font-size: 0.7rem;
     }
-
+    
     .variant-user {
         font-size: 0.6rem;
     }
-
+    
     .winner-card {
         width: 250px;
         height: 150px;

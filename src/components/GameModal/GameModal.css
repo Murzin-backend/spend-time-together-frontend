@@ -168,53 +168,58 @@
 
 .game-modal-store {
     margin-top: 25px;
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    flex-wrap: wrap;
 }
 
-.store-links {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
+.game-modal-store h3 {
+    margin-bottom: 0.75rem;
+    color: #8b949e;
+    font-size: 0.95rem;
 }
 
-.store-button {
-    background-color: #2f81f7;
-    color: white;
-    border: none;
-    padding: 10px 20px;
+.store-links-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+}
+
+.store-link-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #21262d;
+    border: 1px solid #30363d;
+    color: #c9d1d9;
+    padding: 8px 12px;
     border-radius: 6px;
-    font-weight: bold;
+    font-size: 0.85rem;
     cursor: pointer;
     text-decoration: none;
-    display: inline-block;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
-.store-button:hover {
-    background-color: #1f6feb;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(47, 129, 247, 0.3);
+.store-link-btn:hover {
+    background-color: #30363d;
+    border-color: #58a6ff;
+    color: #fff;
+    transform: translateY(-1px);
 }
 
-.rawg-button {
-    background-color: #6c7a89;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    text-decoration: none;
-    display: inline-block;
-    transition: background-color 0.2s;
+.store-link-btn--search {
+    border-style: dashed;
+    opacity: 0.85;
 }
 
-.rawg-button:hover {
-    background-color: #566573;
+.store-link-btn--search:hover {
+    opacity: 1;
+}
+
+.store-link-btn--rawg {
+    border-color: #6c7a89;
+}
+
+.store-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
 }
 
 .search-button {
@@ -232,4 +237,32 @@
 
 .search-button:hover {
     background-color: #d33426;
+}
+
+@media (max-width: 768px) {
+    .game-modal-content {
+        max-width: calc(100vw - 1rem);
+        max-height: 95vh;
+    }
+
+    .game-modal-overlay {
+        padding: 10px;
+    }
+
+    .game-modal-title {
+        font-size: 1.4rem;
+    }
+
+    .game-modal-image {
+        height: 180px;
+    }
+
+    .store-links-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .search-button {
+        width: 100%;
+        text-align: center;
+    }
 }

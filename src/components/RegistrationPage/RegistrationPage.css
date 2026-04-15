@@ -118,12 +118,12 @@
     filter: brightness(0.8);
 }
 
-.register-button:hover {
+.register-button:hover:not(:disabled) {
     filter: brightness(1.1);
     transform: translateY(-2px);
 }
 
-.register-button:active {
+.register-button:active:not(:disabled) {
     transform: translateY(0);
     filter: brightness(1);
 }
