@@ -1,16 +1,12 @@
 version: '3.8'
 
+# Прод-конфиг: тянет готовый образ из Docker Hub (сборка на сервере не нужна).
+# Деплой на сервере:
+#   git pull && docker-compose pull && docker-compose up -d
 services:
   frontend:
-    build:
-      context: .
-      args:
-        - REACT_APP_API_URL=https://spend-time-together.ru/api
+    image: murzinbackend/spend-time-frontend:latest
     container_name: spend-time-together-frontend
     ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    stdin_open: true
-    tty: true
+      - "3000:80"
+    restart: always
