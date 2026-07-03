@@ -1,0 +1,15 @@
+version: '3.8'
+
+# Билд-оверлей для ВЫПУСКА прод-образа (запускать локально, где есть RAM для сборки).
+# REACT_APP_API_URL вшивается в бандл на этапе npm run build (CRA — build-time).
+#
+# Собрать и запушить прод-образ:
+#   docker-compose -f docker-compose.yml -f docker-compose.build.yml build
+#   docker push murzinbackend/spend-time-frontend:latest
+services:
+  frontend:
+    build:
+      context: .
+      args:
+        - REACT_APP_API_URL=https://spend-time-together.ru/api
+    image: murzinbackend/spend-time-frontend:latest
