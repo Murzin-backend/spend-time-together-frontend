@@ -5,6 +5,7 @@ import RegistrationPage from './components/RegistrationPage/RegistrationPage.tsx
 import HomePage from './components/HomePage/HomePage.tsx';
 import NotFoundPage from "./components/NotFoundPage/NotFoundPage.tsx";
 import ActivityPage from './components/ActivityPage/ActivityPage.tsx';
+import RootRedirect from './components/RootRedirect/RootRedirect.tsx';
 import './components/ActivityPage/ActivityPage.css';
 import './components/LoginPage/LoginPage.css';
 import './components/RegistrationPage/RegistrationPage.css';
@@ -20,7 +21,7 @@ import './components/GameFinishedScreen/GameFinishedScreen.css';
 function App() {
     return (
         <Routes>
-            <Route path="/" element={<LoginPage />} />
+            <Route path="/" element={<RootRedirect />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegistrationPage />} />
             <Route path="/home" element={<HomePage />} />

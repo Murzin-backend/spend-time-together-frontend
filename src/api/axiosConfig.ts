@@ -10,7 +10,11 @@ api.interceptors.response.use(
         return response;
     },
     (error) => {
-        if (error.response && error.response.status === 401) {
+        // skipAuthRedirect — для «пробных» запросов (например, проверка сессии на «/»),
+        // где 401 это нормальный ответ, а не повод жёстко редиректить.
+        const skip = (error.config as any)?.skipAuthRedirect;
+        const alreadyOnLogin = window.location.pathname === '/login';
+        if (error.response && error.response.status === 401 && !skip && !alreadyOnLogin) {
             window.location.href = '/login';
         }
         return Promise.reject(error);
