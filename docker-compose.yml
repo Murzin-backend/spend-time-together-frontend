@@ -1,8 +1,5 @@
 version: '3.8'
 
-# Прод-конфиг: тянет готовый образ из Docker Hub (сборка на сервере не нужна).
-# Деплой на сервере:
-#   git pull && docker-compose pull && docker-compose up -d
 services:
   frontend:
     image: murzinbackend/spend-time-frontend:latest

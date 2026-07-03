@@ -2,8 +2,6 @@ import React from 'react';
 import { Navigate } from 'react-router-dom';
 import api from '../../api/axiosConfig.ts';
 
-// Корневой маршрут «/»: если сессия жива (кука) — ведём на /home, иначе на /login.
-// Пробный запрос помечен skipAuthRedirect, чтобы 401 не дёргал глобальный редирект.
 const RootRedirect: React.FC = () => {
     const [state, setState] = React.useState<'loading' | 'auth' | 'guest'>('loading');
 
