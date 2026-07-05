@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {Link, useNavigate, useLocation} from 'react-router-dom';
+import {useNavigate, useLocation} from 'react-router-dom';
 import './LoginPage.css';
 import api from "../../api/axiosConfig.ts";
 import Notification from "../Notification/Notification.tsx";
 import axios from "axios";
-import logo from '../../assets/logo.png';
+import AuthLayout from '../AuthLayout/AuthLayout.tsx';
 
 const LoginPage = () => {
     const [formData, setFormData] = useState({
@@ -45,37 +45,28 @@ const LoginPage = () => {
         }
     };
 
-  return (
-      <div className="auth-container">
-          <Notification
-              message={notification.message}
-              type={notification.type}
-              onClose={() => setNotification({ message: '', type: 'success' })}
-          />
-          <div className="login-page-container">
-              <div className="auth-header">
-                  <img src={logo} alt="Логотип" className="auth-logo" />
-                  <h2>Spend Time Together</h2>
-              </div>
-              <form onSubmit={handleSubmit}>
-                  <div className="form-group">
-                      <label htmlFor="login">Логин</label>
-                      <input id="login" type="text" placeholder="Введите ваш логин" value={formData.login} onChange={handleChange} required />
-                  </div>
-                  <div className="form-group">
-                      <label htmlFor="password">Пароль</label>
-                      <input id="password" type="password" placeholder="Введите ваш пароль" value={formData.password} onChange={handleChange} required />
-                  </div>
-                  <button type="submit" className="login-button" disabled={isLoading}>
-                      {isLoading ? <div className="spinner"></div> : 'Войти'}
-                  </button>
-              </form>
-              <div className="signup-link">
-                  Нет аккаунта? <Link to="/register">Зарегистрироваться</Link>
-              </div>
-          </div>
-      </div>
-  );
+    return (
+        <AuthLayout active="login">
+            <Notification
+                message={notification.message}
+                type={notification.type}
+                onClose={() => setNotification({ message: '', type: 'success' })}
+            />
+            <form onSubmit={handleSubmit}>
+                <div className="auth2-field">
+                    <label className="auth2-label" htmlFor="login">Логин</label>
+                    <input className="auth2-inp" id="login" type="text" placeholder="Ваш логин" value={formData.login} onChange={handleChange} required />
+                </div>
+                <div className="auth2-field">
+                    <label className="auth2-label" htmlFor="password">Пароль</label>
+                    <input className="auth2-inp" id="password" type="password" placeholder="••••••••" value={formData.password} onChange={handleChange} required />
+                </div>
+                <button type="submit" className="auth2-submit" disabled={isLoading}>
+                    {isLoading ? <div className="spinner"></div> : 'Войти'}
+                </button>
+            </form>
+        </AuthLayout>
+    );
 };
 
 export default LoginPage;

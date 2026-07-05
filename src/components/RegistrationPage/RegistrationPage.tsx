@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import api from "../../api/axiosConfig.ts";
 import './RegistrationPage.css';
-import logo from '../../assets/logo.png';
+import AuthLayout from '../AuthLayout/AuthLayout.tsx';
 
 const AVATAR_MAX_SIZE_MB = 5;
 const ALLOWED_AVATAR_CONTENT_TYPES = ['image/png', 'image/jpeg'];
@@ -145,86 +145,65 @@ const RegistrationPage = () => {
     };
 
     return (
-        <div className="auth-container">
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"
-            />
-            <div className="registration-page-container">
-                <div className="auth-header">
-                    <img src={logo} alt="Логотип" className="auth-logo" />
-                    <h2>Создание аккаунта</h2>
+        <AuthLayout active="register">
+            <ToastContainer position="top-right" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="dark" />
+            <form onSubmit={handleSubmit}>
+                <div className="auth2-row">
+                    <div className="auth2-field">
+                        <label className="auth2-label" htmlFor="first_name">Имя</label>
+                        <input className="auth2-inp" id="first_name" type="text" placeholder="Максим" value={formData.first_name} onChange={handleChange} required />
+                    </div>
+                    <div className="auth2-field">
+                        <label className="auth2-label" htmlFor="last_name">Фамилия</label>
+                        <input className="auth2-inp" id="last_name" type="text" placeholder="Мурзин" value={formData.last_name} onChange={handleChange} />
+                    </div>
                 </div>
-                <p className="subtitle">Присоединяйтесь к нам, чтобы начать!</p>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="login">Логин</label>
-                        <input id="login" type="text" placeholder="Придумайте логин" value={formData.login} onChange={handleChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="email">Email</label>
-                        <input id="email" type="email" placeholder="user@example.com" value={formData.email} onChange={handleChange} required />
-                    </div>
-                    <div className="name-fields-group">
-                        <div className="form-group">
-                            <label htmlFor="first_name">Имя</label>
-                            <input id="first_name" type="text" placeholder="Ваше имя" value={formData.first_name} onChange={handleChange} required />
-                        </div>
-                        <div className="form-group">
-                            <label htmlFor="last_name">Фамилия (необязательно)</label>
-                            <input id="last_name" type="text" placeholder="Ваша фамилия" value={formData.last_name} onChange={handleChange} />
-                        </div>
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="telegram_link">Ссылка на Telegram (необязательно)</label>
-                        <input id="telegram_link" type="text" placeholder="https://t.me/username" value={formData.telegram_link} onChange={handleChange} />
-                    </div>
-                    <div className="form-group">
-                        <label>Аватар (необязательно)</label>
-                        <div className="avatar-upload-container">
-                            <input id="avatar" type="file" accept="image/png, image/jpeg" onChange={handleFileChange} style={{ display: 'none' }} />
-                            <div className="avatar-preview-container">
-                                <label htmlFor="avatar" className="avatar-upload-label">
-                                    {avatarPreview ? (
-                                        <img src={avatarPreview} alt="Превью аватара" className="avatar-preview" />
-                                    ) : (
-                                        <span></span>
-                                    )}
-                                </label>
-                                {avatarPreview && (
-                                    <button type="button" className="remove-avatar-btn" onClick={handleRemoveAvatar}>×</button>
+                <div className="auth2-field">
+                    <label className="auth2-label" htmlFor="login">Логин</label>
+                    <input className="auth2-inp" id="login" type="text" placeholder="Придумайте логин" value={formData.login} onChange={handleChange} required />
+                </div>
+                <div className="auth2-field">
+                    <label className="auth2-label" htmlFor="email">Email</label>
+                    <input className="auth2-inp" id="email" type="email" placeholder="you@mail.ru" value={formData.email} onChange={handleChange} required />
+                </div>
+                <div className="auth2-field">
+                    <label className="auth2-label" htmlFor="telegram_link">Telegram <span style={{ textTransform: 'none', color: '#59626f' }}>(необязательно)</span></label>
+                    <input className="auth2-inp" id="telegram_link" type="text" placeholder="https://t.me/username" value={formData.telegram_link} onChange={handleChange} />
+                </div>
+                <div className="auth2-field">
+                    <label className="auth2-label">Аватар <span style={{ textTransform: 'none', color: '#59626f' }}>(необязательно)</span></label>
+                    <div className="avatar-upload-container">
+                        <input id="avatar" type="file" accept="image/png, image/jpeg" onChange={handleFileChange} style={{ display: 'none' }} />
+                        <div className="avatar-preview-container">
+                            <label htmlFor="avatar" className="avatar-upload-label">
+                                {avatarPreview ? (
+                                    <img src={avatarPreview} alt="Превью аватара" className="avatar-preview" />
+                                ) : (
+                                    <span></span>
                                 )}
-                            </div>
-                            <div className="avatar-upload-text">
-                                {avatarFile ? `Выбран файл: ${avatarFile.name}` : 'Нажмите, чтобы загрузить'}
-                            </div>
+                            </label>
+                            {avatarPreview && (
+                                <button type="button" className="remove-avatar-btn" onClick={handleRemoveAvatar}>×</button>
+                            )}
+                        </div>
+                        <div className="avatar-upload-text">
+                            {avatarFile ? `Выбран файл: ${avatarFile.name}` : 'Нажмите, чтобы загрузить'}
                         </div>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="password">Пароль</label>
-                        <input id="password" type="password" placeholder="Придумайте пароль" value={formData.password} onChange={handleChange} required />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="confirmPassword">Подтвердите пароль</label>
-                        <input id="confirmPassword" type="password" placeholder="Повторите пароль" value={formData.confirmPassword} onChange={handleChange} required />
-                    </div>
-                    <button type="submit" className="register-button" disabled={isLoading}>
-                        {isLoading ? <div className="spinner"></div> : 'Создать аккаунт'}
-                    </button>
-                </form>
-                <div className="signin-link">
-                    Уже есть аккаунт? <Link to="/login">Войти</Link>
                 </div>
-            </div>
-        </div>
+                <div className="auth2-field">
+                    <label className="auth2-label" htmlFor="password">Пароль</label>
+                    <input className="auth2-inp" id="password" type="password" placeholder="Минимум 8 символов" value={formData.password} onChange={handleChange} required />
+                </div>
+                <div className="auth2-field">
+                    <label className="auth2-label" htmlFor="confirmPassword">Подтвердите пароль</label>
+                    <input className="auth2-inp" id="confirmPassword" type="password" placeholder="Повторите пароль" value={formData.confirmPassword} onChange={handleChange} required />
+                </div>
+                <button type="submit" className="auth2-submit" disabled={isLoading}>
+                    {isLoading ? <div className="spinner"></div> : 'Создать аккаунт'}
+                </button>
+            </form>
+        </AuthLayout>
     );
 };
 
