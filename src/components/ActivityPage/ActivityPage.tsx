@@ -832,9 +832,9 @@ const ActivityPage: React.FC = () => {
                                         rating: rating,
                                         release_date: release_date,
                                         stores: stores,
-                                        firstName: updatedParticipants[participantIndex].firstName || user_first_name,
-                                        lastName: updatedParticipants[participantIndex].lastName || user_last_name,
-                                        avatarUrl: updatedParticipants[participantIndex].avatarUrl || user_avatar_url,
+                                        firstName: user_first_name || updatedParticipants[participantIndex].firstName,
+                                        lastName: user_last_name || updatedParticipants[participantIndex].lastName,
+                                        avatarUrl: user_avatar_url || updatedParticipants[participantIndex].avatarUrl,
                                     };
                                 } else {
 
