@@ -44,16 +44,14 @@ const WheelOfFortune: React.FC<Props> = ({ variants, winnerId, spinning, onSelec
 
     React.useEffect(() => {
         if (processing.current) return;
-        const activeNow = variants.filter(v => !v.isEliminated).map(v => v.userId);
-        const missing = displayRef.current.some(id => !activeNow.includes(id));
-        const extra = activeNow.some(id => !displayRef.current.includes(id));
-        if (missing || extra) {
-            setDisplayIds(() => {
-                const kept = displayRef.current.filter(id => activeNow.includes(id));
-                activeNow.forEach(id => { if (!kept.includes(id)) kept.push(id); });
-                return kept;
-            });
-        }
+        const allIds = variants.map(v => v.userId);
+        const activeIds = variants.filter(v => !v.isEliminated).map(v => v.userId);
+        setDisplayIds(prev => {
+            const next = prev.filter(id => allIds.includes(id));
+            activeIds.forEach(id => { if (!next.includes(id)) next.push(id); });
+            if (next.length === prev.length && next.every((id, i) => id === prev[i])) return prev;
+            return next;
+        });
     }, [variants]);
 
     React.useEffect(() => {
