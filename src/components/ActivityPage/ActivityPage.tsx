@@ -8,6 +8,8 @@ import Notification, { NotificationProps } from '../Notification/Notification.ts
 import GameModal from '../GameModal/GameModal.tsx';
 import {getGameDetails, getGameStoreUrl, searchGames} from "../../api/rawgApi.ts";
 import GameFinishedScreen from '../GameFinishedScreen/GameFinishedScreen.tsx';
+import WheelOfFortune, { WheelVariant } from './WheelOfFortune.tsx';
+import './ActivityRedesign.css';
 
 interface User {
     id: number;
@@ -1459,181 +1461,124 @@ const ActivityPage: React.FC = () => {
     };
 
 
-    return (
-        <div className="activity-container">
-            {notification &&
-                <Notification
-                    message={notification.message}
-                    type={notification.type}
-                    onClose={() => setNotification(null)}
-                />
-            }
+    const wheelVariants: WheelVariant[] = participants
+        .filter(p => p.variant)
+        .map((p, i) => {
+            const img = getVariantImage(p);
+            return {
+                userId: p.userId,
+                name: getVariantName(p),
+                image: img ? (img.startsWith('http') ? img : backendUrl + img) : null,
+                by: getUserDisplayName(p),
+                color: ['#7c4dff', '#e0a53a', '#26a69a', '#66bb6a', '#ec6a5e', '#4c9ffe', '#f0883e', '#a371f7'][i % 8],
+                isEliminated: p.isEliminated,
+                online: p.isOnline !== false,
+                metacritic: p.metacritic && p.metacritic !== 0 ? p.metacritic : undefined,
+            };
+        });
 
-            {/* Модальное окно с информацией о игре */}
+    const wheelWinnerId: number | null = (activityStatus === 'FINISHED' && winner)
+        ? winner.userId
+        : (activityInfo?.status === 'finished' && activityInfo?.winner_user_id ? activityInfo.winner_user_id : null);
+
+    const submitted = hasUserSubmittedVariant();
+
+    return (
+        <div className="av2">
+            {notification &&
+                <Notification message={notification.message} type={notification.type} onClose={() => setNotification(null)} />
+            }
             {gameModal.isOpen && gameModal.game && (
-                <GameModal
-                    game={gameModal.game}
-                    onClose={closeGameModal}
-                />
+                <GameModal game={gameModal.game} onClose={closeGameModal} />
             )}
 
-            <header className="activity-header">
-                <Link to="/home" className="back-to-home">
-                    &larr; Вернуться
-                </Link>
-                <div className="activity-title-status">
-                    <h1>{activityName}</h1>
-                    <div className={`connection-status ${isConnected ? 'connected' : ''}`}>
-                        {isConnected ? 'Подключено' : 'Нет соединения'}
-                    </div>
+            <div className="av2-topbar">
+                <div className="av2-tb-left"><Link to="/home" className="av2-back">← Вернуться</Link></div>
+                <div className="av2-tb-center">
+                    <img src={logo} alt="" className="av2-logo" />
+                    <span className="av2-name">{activityName}</span>
                 </div>
-                <div className="activity-status-badge">{activityStatus}</div>
-            </header>
+                <div className="av2-tb-right">
+                    <span className={`av2-pill ${isConnected ? 'on' : ''}`}>
+                        <i className="dot" />{isConnected ? 'Подключено' : 'Нет соединения'}
+                    </span>
+                </div>
+            </div>
 
-            {error && <div className="error-banner">{error}</div>}
+            {error && <div className="av2-error">{error}</div>}
 
-            <main className="activity-main">
-                <div className="participants-panel">
-                    <div className="activity-logo-container">
-                        <img src={logo} alt="Логотип" className="activity-logo" />
-                        <h2 className="activity-name">{activityName}</h2>
-                    </div>
-
-                    <h2>Участники ({participants.length})</h2>
-                    <ul>
+            <div className="av2-body">
+                <aside className="av2-side">
+                    <div className="av2-side-scroll">
+                        <div className="av2-side-title">Участники ({participants.length})</div>
                         {participants.map(p => (
-                            <li key={p.userId} className={`${p.isEliminated ? 'eliminated' : ''} ${p.variant ? 'submitted' : ''}`}>
-                                <div className="participant-info">
-                                    <div className="participant-avatar-wrapper">
-                                        {p.avatarUrl ? (
-                                            <img src={backendUrl + p.avatarUrl} alt={p.firstName} className="participant-avatar" />
-                                        ) : (
-                                            <div className="participant-avatar">👤</div>
-                                        )}
-                                        <span className={`online-indicator ${p.isOnline !== false ? 'online' : 'offline'}`} />
-                                    </div>
-                                    <span className="participant-name">{getUserDisplayName(p)}</span>
-                                </div>
-                                {p.variant && <span className="variant-badge">✓</span>}
-                            </li>
+                            <div key={p.userId} className={`av2-member ${p.isEliminated ? 'eliminated' : ''}`}>
+                                <span className="av2-avatar">
+                                    {p.avatarUrl ? <img src={backendUrl + p.avatarUrl} alt="" /> : '👤'}
+                                    <span className={`av2-dot ${p.isOnline !== false ? 'online' : ''}`} />
+                                </span>
+                                <div className="av2-mbody"><div className="av2-mname">{getUserDisplayName(p)}</div></div>
+                                {p.variant && <span className="av2-check">✓</span>}
+                            </div>
                         ))}
-                    </ul>
-
-                    <div className="reactions-section">
-                        <button
-                            className="reaction-toggle-btn"
-                            onClick={() => setShowReactionPanel(!showReactionPanel)}
-                        >
-                            💬
-                        </button>
+                    </div>
+                    <div className="av2-side-foot">
                         {showReactionPanel && (
-                            <div className="reaction-panel">
+                            <div className="av2-rpick">
                                 {REACTIONS.map(r => (
-                                    <button
-                                        key={r.id}
-                                        className="reaction-btn"
-                                        onClick={() => sendReaction(r.id)}
-                                    >
-                                        <span className="reaction-emoji">{r.emoji}</span>
-                                        <span className="reaction-text">{r.text}</span>
-                                    </button>
+                                    <button key={r.id} onClick={() => sendReaction(r.id)}>{r.emoji}<span>{r.text}</span></button>
                                 ))}
                             </div>
                         )}
+                        <button className="av2-react-btn" onClick={() => setShowReactionPanel(!showReactionPanel)}>💬 Реакция</button>
+                        {isCreator && (activityStatus === 'PLANNED' || activityStatus === 'planned') && (
+                            <button className="av2-btn go" onClick={startGame}>🎡 Крутить колесо</button>
+                        )}
                     </div>
+                </aside>
 
-                    {/* Floating reactions */}
-                    <div className="floating-reactions">
-                        {activeReactions.map(r => {
-                            const reactionDef = REACTIONS.find(def => def.id === r.reactionId);
-                            return (
-                                <div key={r.id} className="floating-reaction">
-                                    <span className="floating-reaction-emoji">{reactionDef?.emoji}</span>
-                                    <div className="floating-reaction-content">
-                                        <span className="floating-reaction-user">{r.username}</span>
-                                        <span className="floating-reaction-text">{reactionDef?.text}</span>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                    {isCreator && (activityStatus === 'PLANNED' || activityStatus === 'planned') && (
-                        <button
-                            onClick={startGame}
-                            className="start-game-button"
-                        >
-                            Начать игру
-                        </button>
-                    )}
-                </div>
-
-                <div className="game-panel">
-                    {/* Показываем экран результатов если игра завершена */}
-                    {(activityStatus === 'FINISHED' || (activityInfo?.status === 'finished' && activityInfo?.winner_user_id)) ? (
-                        <div className="game-finished-wrapper">
-                            <GameFinishedScreen
-                                winner={winner || { userId: activityInfo?.winner_user_id || 0, variant: 'Неизвестный вариант' }}
-                                allVariants={getFinishedGameVariants()}
-                                onOpenGameModal={openGameModal}
-                                isCreator={isCreator}
-                                backendUrl={backendUrl}
-                            />
+                <main className="av2-main">
+                    {activityStatus !== 'FINISHED' && (
+                        <div className="av2-search-row">
+                            <form className="variant-form" onSubmit={e => e.preventDefault()}>
+                                <GameSearchInput
+                                    onGameSelect={handleGameSelect}
+                                    disabled={submitted}
+                                    defaultValue={
+                                        currentUser && participants.find(p => Number(p.userId) === Number(currentUser.id) && p.variant)
+                                            ? getVariantName(participants.find(p => Number(p.userId) === Number(currentUser.id))!)
+                                            : ''
+                                    }
+                                />
+                            </form>
+                            {submitted && <div className="av2-submitted">Ваш вариант отправлен ✓</div>}
                         </div>
-                    ) : (
-                        <>
-                            {activityStatus !== 'FINISHED' && (
-                                <div className="game-controls">
-                                    {timer !== null && <div className="timer">Осталось времени: {timer}с</div>}
-                                    <form className="variant-form">
-                                        <GameSearchInput
-                                            onGameSelect={handleGameSelect}
-                                            disabled={hasUserSubmittedVariant()}
-                                            defaultValue={
-                                                currentUser && participants.find(p => Number(p.userId) === Number(currentUser.id) && p.variant)
-                                                    ? getVariantName(participants.find(p => Number(p.userId) === Number(currentUser.id))!)
-                                                    : ''
-                                            }
-                                        />
-                                    </form>
-                                    {hasUserSubmittedVariant() && (
-                                        <div className="variant-submitted-notice">
-                                            Ваш вариант уже отправлен. Нельзя отправить больше одного варианта.
-                                        </div>
-                                    )}
-
-                                </div>
-                            )}
-
-                            <div className={`roulette-container ${rouletteActive ? 'active' : ''} ${finalShowdown ? 'final-showdown' : ''}`}>
-                                <h2>Варианты в игре</h2>
-
-                                {/* Обертка для эффекта рулетки */}
-                                <div className={`roulette-drum ${finalShowdown ? 'final-showdown-grid' : ''}`}>
-                                    <div className="variants-grid">
-                                        {renderVariants()}
-                                    </div>
-
-                                    {/* Сообщение о финальной битве */}
-                                    {finalShowdown && !eliminatingUserId && (
-                                        <div className="roulette-message">
-                                            Финальная битва!
-                                        </div>
-                                    )}
-                                </div>
-
-                                {rouletteActive && (
-                                    <div className="roulette-status">
-                                        <div className="status-text">
-                                            {finalShowdown ? '🔥 Финальная битва!' : '🎰 Выбираем победителя...'}
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </>
                     )}
-                </div>
-            </main>
+
+                    <WheelOfFortune
+                        variants={wheelVariants}
+                        winnerId={wheelWinnerId}
+                        spinning={rouletteActive}
+                        onSelect={(userId) => {
+                            const p = participants.find(x => x.userId === userId);
+                            if (p && p.variant) openGameModal(p.variant, p);
+                        }}
+                    />
+                </main>
+            </div>
+
+            <div className="av2-floating">
+                {activeReactions.map(r => {
+                    const def = REACTIONS.find(d => d.id === r.reactionId);
+                    return (
+                        <div key={r.id} className="av2-float">
+                            <span className="em">{def?.emoji}</span>
+                            <span>{def?.text}</span>
+                            <span className="fu">· {r.username}</span>
+                        </div>
+                    );
+                })}
+            </div>
         </div>
     );
 };

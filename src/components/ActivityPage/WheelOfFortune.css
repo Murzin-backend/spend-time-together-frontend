@@ -1,0 +1,238 @@
+.wof {
+    flex: 1;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 22px;
+    background:
+        radial-gradient(80% 60% at 40% 0%, rgba(76, 159, 254, .07), transparent 60%),
+        #141922;
+    border: 1px solid #262d3a;
+    border-radius: 18px;
+    padding: 24px;
+    overflow: hidden;
+}
+
+.wof-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    min-width: 0;
+}
+
+.wof-wrap {
+    position: relative;
+    width: min(46vh, 360px);
+    aspect-ratio: 1;
+}
+
+.wof-ptr {
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 26px solid #f5c04a;
+    filter: drop-shadow(0 3px 5px rgba(0, 0, 0, .55));
+}
+
+.wof-spin {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 0 8px #0d1219, 0 0 0 10px #333d4d, 0 20px 50px rgba(0, 0, 0, .55);
+}
+
+.wof-spin svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    animation: wofPop .28s ease-out;
+}
+
+@keyframes wofPop {
+    from { transform: scale(.9); opacity: .35; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.wof-slice {
+    cursor: pointer;
+    transition: opacity .15s;
+}
+
+.wof-slice:hover {
+    opacity: .82;
+}
+
+.wof-doomed {
+    stroke: #e5534b;
+    stroke-width: 1.6;
+    filter: drop-shadow(0 0 6px rgba(229, 83, 75, .85));
+    animation: wofPulse .55s;
+}
+
+@keyframes wofPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: .55; }
+}
+
+.wof-label {
+    pointer-events: none;
+    font-weight: 700;
+}
+
+.wof-hub {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 58px;
+    height: 58px;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+    background: radial-gradient(circle at 40% 35%, #222b3a, #12161f);
+    border: 3px solid #333d4d;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 23px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
+}
+
+.wof-status {
+    font-size: 15px;
+    font-weight: 700;
+    min-height: 24px;
+    text-align: center;
+    color: #8b95a5;
+}
+
+.wof-status.win { color: #f5c04a; }
+.wof-status.spin { color: #4c9ffe; }
+
+.wof-legend-col {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.wof-legend-head {
+    font-size: 13px;
+    font-weight: 680;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    color: #e6edf3;
+}
+
+.wof-legend-head small {
+    color: #59626f;
+    font-weight: 600;
+}
+
+.wof-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    overflow-y: auto;
+}
+
+.wof-lrow {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 9px 10px;
+    border-radius: 11px;
+    cursor: pointer;
+    background: #1a2130;
+    border: 1px solid #262d3a;
+    transition: .25s;
+}
+
+.wof-lrow:hover {
+    background: #1e2634;
+    border-color: #333d4d;
+}
+
+.wof-lrow.win {
+    border-color: #f5c04a;
+    box-shadow: 0 0 0 1px #f5c04a;
+    background: rgba(245, 192, 74, .08);
+}
+
+.wof-lrow.dead {
+    opacity: .42;
+    filter: grayscale(1);
+}
+
+.wof-lrow.dead .wof-lname {
+    text-decoration: line-through;
+    text-decoration-color: #59626f;
+}
+
+.wof-lthumb {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    display: grid;
+    place-items: center;
+    font-size: 15px;
+    background-size: cover;
+    background-position: center;
+}
+
+.wof-lbody {
+    min-width: 0;
+    flex: 1;
+}
+
+.wof-lname {
+    font-size: 13px;
+    font-weight: 680;
+    color: #e6edf3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wof-lby {
+    font-size: 11px;
+    color: #8b95a5;
+    margin-top: 1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wof-lby.off { color: #59626f; }
+
+.wof-ltag {
+    margin-left: auto;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    color: #59626f;
+}
+
+.wof-lmc {
+    margin-left: auto;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: #8b95a5;
+}
+
+@media (max-width: 920px) {
+    .wof { grid-template-columns: 1fr; }
+    .wof-legend-col { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .wof-spin svg { animation: none; }
+}
