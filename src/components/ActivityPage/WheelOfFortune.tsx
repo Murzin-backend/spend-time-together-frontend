@@ -119,7 +119,7 @@ const WheelOfFortune: React.FC<Props> = ({ variants, winnerId, spinning, onSelec
                             </defs>
                             <circle cx={C} cy={C} r={R} fill="#0d1219" />
                             {active.length === 0 && (
-                                <text x={C} y={C} textAnchor="middle" dominantBaseline="central" fontSize="6" fill="#59626f">нет вариантов</text>
+                                <text x={C} y="74" textAnchor="middle" dominantBaseline="central" fontSize="5.5" fill="#59626f">нет вариантов</text>
                             )}
                             {active.length === 1 ? (
                                 <>
@@ -153,7 +153,6 @@ const WheelOfFortune: React.FC<Props> = ({ variants, winnerId, spinning, onSelec
                                     />
                                 );
                             })}
-                            <ellipse cx="38" cy="30" rx="34" ry="24" fill="#ffffff" opacity="0.05" pointerEvents="none" />
                         </svg>
                     </div>
                     <div className="wof-hub">🎲</div>
