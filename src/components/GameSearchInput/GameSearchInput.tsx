@@ -168,7 +168,7 @@ const GameSearchInput: React.FC<GameSearchInputProps> = ({ onGameSelect, disable
                 onChange={handleInputChange}
                 onFocus={handleFocus}
                 placeholder="Начните вводить название игры..."
-                disabled={disabled || isLoading}
+                disabled={disabled}
             />
             {isLoading && <div className="spinner-small"></div>}
             {disabled && <div className="search-disabled-indicator">✓</div>}
