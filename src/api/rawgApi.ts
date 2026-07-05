@@ -25,14 +25,16 @@ export interface RawgGame {
 interface GameStoreResponse {
     results: {
         id: number;
+        game_id: number;
         url: string;
         store_id: number;
-        store: {
-            id: number;
-            name: string;
-        }
     }[];
 }
+
+const STORE_NAMES: Record<number, string> = {
+    1: 'Steam', 2: 'Xbox Store', 3: 'PlayStation Store', 4: 'App Store', 5: 'GOG',
+    6: 'Nintendo Store', 7: 'Xbox 360 Store', 8: 'Google Play', 9: 'itch.io', 11: 'Epic Games',
+};
 
 export const searchGames = async (query: string): Promise<RawgGame[]> => {
     if (!query) return [];
@@ -101,7 +103,7 @@ export const getGameStores = async (gameId: number): Promise<GameStoreInfo[]> =>
         if (!stores || stores.length === 0) return [];
 
         return stores.map(s => ({
-            store: { id: s.store_id, name: s.store.name },
+            store: { id: s.store_id, name: STORE_NAMES[s.store_id] || 'Магазин' },
             url: s.url,
         }));
     } catch (error) {
