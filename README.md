@@ -1,60 +1,60 @@
 # spend time together
 
-> Приложение для совместного планирования и проведения досуга в компании друзей. Выбирайте мероприятия, предлагайте свои варианты и позвольте случаю решить, чем вы займетесь сегодня!
+> An app for planning and spending leisure time together with friends. Pick activities, suggest your own options, and let chance decide what you are doing today!
 
-## ✨ О проекте
+## ✨ About
 
-**spend time together** — это платформа, которая помогает группам друзей организовывать совместные мероприятия. Больше не нужно долго спорить, какой фильм посмотреть или в какую игру поиграть. Просто создайте событие, накидайте варианты, а наш рандомайзер выберет один за вас!
+**spend time together** is a platform that helps groups of friends organise things to do together. No more long arguments about which film to watch or which game to play. Create an event, throw in some options, and the randomiser picks one for you!
 
-## 🚀 Основные возможности
+## 🚀 Features
 
-*   🔐 **Аутентификация:** Безопасная регистрация и вход в систему.
-*   🚪 **Комнаты по приглашениям:** Создавайте приватные группы и приглашайте друзей по уникальному коду.
-*   📅 **Календарь событий:** Планируйте мероприятия на любую дату.
-*   🎲 **Выбор активности:** Укажите, что будете делать (играть, смотреть, читать) и задайте фильтры.
-*   💡 **Банк идей:** Каждый участник может предложить свой вариант для события.
-*   🎉 **Случайный выбор:** Система случайным образом выбирает один из предложенных вариантов, которому все будут следовать.
+*   🔐 **Authentication:** Secure sign-up and sign-in.
+*   🚪 **Invite-only rooms:** Create private groups and invite friends with a unique code.
+*   📅 **Event calendar:** Plan activities for any date.
+*   🎲 **Activity selection:** Choose what you are doing (playing, watching, reading) and set filters.
+*   💡 **Idea bank:** Every participant can suggest their own option for an event.
+*   🎉 **Random pick:** The system randomly selects one of the suggested options for everyone to follow.
 
-## 🛠️ Технологии
+## 🛠️ Technologies
 
 *   **Frontend:** React, TypeScript, CSS
-*   **Навигация:** React Router
-*   **Менеджер пакетов:** npm
+*   **Routing:** React Router
+*   **Package manager:** npm
 
-## ⚙️ Начало работы
+## ⚙️ Getting started
 
-Чтобы запустить проект локально, следуйте этим шагам.
+Follow these steps to run the project locally.
 
-### Установка
+### Installation
 
-1.  Клонируйте репозиторий:
+1.  Clone the repository:
     ```sh
-    git clone https://github.com/Murzin-backend/spend-time-together-frontend.git
+    git clone https://github.com/murzin-ml/spend-time-together-frontend.git
     ```
-2.  Перейдите в директорию проекта:
+2.  Change into the project directory:
     ```sh
     cd spend-time-together-frontend
     ```
-3.  Запустите Docker Compose для сборки и запуска приложения.
+3.  Run Docker Compose to build and start the application.
 
-### Локальная разработка (dev)
+### Local development (dev)
 
-Для локального тестирования используйте `docker-compose.dev.yml`. Фронтенд будет обращаться к бэкенду на `http://localhost:8000/api`:
+For local testing use `docker-compose.dev.yml`. The frontend will talk to the backend at `http://localhost:8000/api`:
 
 ```sh
 docker-compose -f docker-compose.dev.yml up --build -d
 ```
 
-Приложение будет доступно по адресу `http://localhost:3000`.
+The application is available at `http://localhost:3000`.
 
-> Убедитесь, что бэкенд (`spend-time-together`) запущен и доступен на порту 8000.
+> Make sure the backend (`spend-time-together`) is running and reachable on port 8000.
 
-### Продакшн
+### Production
 
-Для продакшн-сборки используйте основной `docker-compose.yml`. Фронтенд будет обращаться к API на `https://spend-time-together.ru/api`:
+For a production build use the main `docker-compose.yml`. The frontend will call the API at `https://spend-time-together.ru/api`:
 
 ```sh
 docker-compose up --build -d
 ```
 
-Приложение будет доступно на порту 80.
+The application is served on port 80.
